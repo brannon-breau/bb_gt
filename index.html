@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brannon Breau — ServiceNow Developer</title>
+<link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
+<link rel="shortcut icon" href="images/favicon.ico">
+<link rel="manifest" href="images/site.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;450;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#15212c;
+    --ink-soft:#1d2c39;
+    --ink-line:#2b3c4a;
+    --paper:#f4f2ec;
+    --card:#ffffff;
+    --text:#1b2a33;
+    --muted:#5d6e78;
+    --muted-light:#8a99a2;
+    --teal:#0f7d72;
+    --teal-bright:#15b3a3;
+    --teal-faint:#e3f1ee;
+    --radius:14px;
+    --sidebar-w:340px;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+
+  html{scroll-behavior:smooth}
+
+  body{
+    font-family:'Inter',system-ui,sans-serif;
+    background:var(--paper);
+    color:var(--text);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  a{color:inherit;text-decoration:none}
+
+  .layout{display:flex;min-height:100vh}
+
+  /* ---------- SIDEBAR ---------- */
+  .sidebar{
+    width:var(--sidebar-w);
+    flex-shrink:0;
+    background:var(--ink);
+    color:#dfe7ec;
+    position:fixed;
+    top:0;left:0;bottom:0;
+    display:flex;
+    flex-direction:column;
+    padding:44px 36px;
+    overflow-y:auto;
+  }
+
+  .badge{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:var(--teal-bright);
+    margin-bottom:26px;
+  }
+  .badge::before{content:"● ";font-size:9px;vertical-align:1px}
+
+  .name{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:600;
+    font-size:34px;
+    line-height:1.08;
+    letter-spacing:-.02em;
+    color:#fff;
+    margin-bottom:10px;
+  }
+
+  .role{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:400;
+    font-size:15px;
+    color:var(--teal-bright);
+    margin-bottom:30px;
+  }
+
+  .rule{height:1px;background:var(--ink-line);margin:6px 0 26px}
+
+  .contact{
+    list-style:none;
+    font-family:'JetBrains Mono',monospace;
+    font-size:12.5px;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    margin-bottom:34px;
+  }
+  .contact li{display:flex;align-items:flex-start;gap:11px;color:#b8c4cc}
+  .contact .ic{
+    width:16px;flex-shrink:0;color:var(--teal-bright);
+    margin-top:1px;
+  }
+  .contact a{transition:color .15s ease;word-break:break-all}
+  .contact a:hover{color:#fff}
+
+  .download{
+    display:flex;align-items:center;justify-content:center;gap:10px;
+    background:var(--teal-bright);
+    color:#06241f;
+    font-weight:600;
+    font-size:14.5px;
+    padding:14px 18px;
+    border-radius:10px;
+    transition:transform .15s ease, background .15s ease;
+    margin-bottom:14px;
+  }
+  .download:hover{background:#1ccdb9;transform:translateY(-1px)}
+  .download svg{width:17px;height:17px}
+
+  .download-note{
+    font-family:'JetBrains Mono',monospace;
+    font-size:10.5px;
+    color:var(--muted-light);
+    text-align:center;
+    margin-bottom:34px;
+  }
+
+  .side-nav{
+    list-style:none;
+    display:flex;flex-direction:column;gap:3px;
+    margin-bottom:auto;
+  }
+  .side-nav a{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    letter-spacing:.04em;
+    color:#92a2ab;
+    padding:7px 0;
+    display:flex;align-items:center;gap:12px;
+    transition:color .15s ease;
+  }
+  .side-nav a .num{color:var(--teal);font-size:11px}
+  .side-nav a:hover{color:#fff}
+
+  .side-foot{
+    margin-top:34px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    color:var(--muted-light);
+    line-height:1.7;
+  }
+  .avail{color:var(--teal-bright)}
+  .avail::before{
+    content:"";display:inline-block;width:7px;height:7px;border-radius:50%;
+    background:var(--teal-bright);margin-right:7px;vertical-align:1px;
+    box-shadow:0 0 0 3px rgba(21,179,163,.2);
+  }
+
+  .cert-badges{
+    display:flex;flex-wrap:wrap;gap:8px;
+    margin-top:16px;
+  }
+  .cert-badges a{
+    display:block;
+    opacity:.82;
+    transition:opacity .15s ease, transform .15s ease;
+  }
+  .cert-badges a:hover{opacity:1;transform:scale(1.06)}
+  .cert-badges img{
+    width:56px;height:56px;
+    object-fit:contain;
+    border-radius:6px;
+  }
+
+  /* ---------- MAIN ---------- */
+  .content{
+    margin-left:var(--sidebar-w);
+    flex:1;
+    padding:64px 72px 80px;
+    max-width:960px;
+  }
+
+  .section{margin-bottom:60px}
+  .section:last-child{margin-bottom:0}
+
+  .sec-label{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    letter-spacing:.2em;
+    text-transform:uppercase;
+    color:var(--teal);
+    display:flex;align-items:center;gap:14px;
+    margin-bottom:22px;
+  }
+  .sec-label::after{content:"";flex:1;height:1px;background:#dcdacf}
+
+  .lead{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:21px;
+    font-weight:400;
+    line-height:1.5;
+    letter-spacing:-.01em;
+    color:#26343d;
+  }
+  .lead strong{font-weight:600;color:var(--text)}
+
+  /* skills */
+  .skills-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:18px;
+  }
+  .skill-card{
+    background:var(--card);
+    border:1px solid #e7e4d8;
+    border-radius:var(--radius);
+    padding:22px 24px;
+  }
+  .skill-card h4{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    color:var(--teal);
+    margin-bottom:12px;
+  }
+  .tags{display:flex;flex-wrap:wrap;gap:7px}
+  .tag{
+    font-size:13px;
+    color:#34454f;
+    background:var(--teal-faint);
+    border-radius:6px;
+    padding:4px 10px;
+    white-space:nowrap;
+  }
+
+  /* experience timeline */
+  .timeline{position:relative;padding-left:30px}
+  .timeline::before{
+    content:"";position:absolute;left:5px;top:6px;bottom:6px;
+    width:2px;background:#dcdacf;
+  }
+  .job{position:relative;padding-bottom:34px}
+  .job:last-child{padding-bottom:0}
+  .job::before{
+    content:"";position:absolute;left:-30px;top:5px;
+    width:12px;height:12px;border-radius:50%;
+    background:var(--paper);border:2.5px solid var(--teal-bright);
+  }
+  .job-head{
+    display:flex;justify-content:space-between;align-items:baseline;
+    flex-wrap:wrap;gap:4px 16px;margin-bottom:3px;
+  }
+  .job-title{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:600;font-size:18px;color:var(--text);
+  }
+  .job-date{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;color:var(--muted);white-space:nowrap;
+  }
+  .job-meta{
+    font-size:14px;color:var(--teal);font-weight:500;margin-bottom:12px;
+  }
+  .job ul{list-style:none;display:flex;flex-direction:column;gap:7px}
+  .job ul li{
+    position:relative;padding-left:18px;font-size:14.5px;color:#3c4a53;
+  }
+  .job ul li::before{
+    content:"";position:absolute;left:0;top:9px;
+    width:5px;height:5px;border-radius:1px;background:var(--teal-bright);
+  }
+
+  .job ul.sub-list{
+    margin-top:8px;
+    display:grid;
+    grid-template-columns:repeat(3,max-content);
+    gap:4px 10px;
+    justify-content:start;
+  }
+  .job ul.sub-list li{font-size:13px;color:var(--muted);padding-left:14px}
+  .job ul.sub-list li::before{
+    width:4px;height:4px;top:8px;border-radius:50%;
+    background:var(--muted-light);
+  }
+
+  .sub-role{
+    margin-top:18px;padding-top:16px;border-top:1px dashed #d8d6ca;
+  }
+
+  /* education */
+  .edu{
+    background:var(--card);border:1px solid #e7e4d8;
+    border-radius:var(--radius);padding:24px 26px;
+    display:flex;justify-content:space-between;align-items:baseline;
+    flex-wrap:wrap;gap:6px 20px;
+  }
+  .edu-school{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:18px}
+  .edu-degree{font-size:14.5px;color:var(--muted);margin-top:3px}
+  .edu-date{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted)}
+
+  /* certifications */
+  .cert-group{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:var(--muted);
+    display:flex;align-items:center;gap:14px;
+    margin:36px 0 18px;
+  }
+  .cert-group:first-of-type{margin-top:4px}
+  .cert-group::after{content:"";flex:1;height:1px;background:#dcdacf}
+  .cert-group .count{color:var(--muted-light);font-size:10px}
+
+  .cert-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:14px;
+  }
+  .cert{
+    background:var(--card);
+    border:1px solid #e7e4d8;
+    border-radius:var(--radius);
+    padding:20px 22px;
+    display:flex;flex-direction:column;
+    transition:border-color .15s ease, transform .15s ease;
+  }
+  .cert:hover{border-color:var(--teal-bright);transform:translateY(-2px)}
+  .cert-top{
+    display:flex;justify-content:space-between;align-items:flex-start;
+    gap:12px;margin-bottom:auto;
+  }
+  .cert-kind{
+    font-family:'JetBrains Mono',monospace;
+    font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--teal);padding-top:2px;
+  }
+  .cert-year{
+    font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted-light);
+  }
+  .cert-name{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:500;font-size:16px;line-height:1.3;
+    color:var(--text);margin:14px 0 16px;
+  }
+  .cert-link{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;color:var(--teal);
+    display:inline-flex;align-items:center;gap:7px;
+    transition:gap .15s ease;
+  }
+  .cert-link:hover{gap:11px}
+  .cert-link svg{width:13px;height:13px}
+
+  /* single-link cards keep the link left-aligned */
+  .cert > .cert-link{align-self:flex-start}
+
+  /* two-link row: credential left, delta pushed to the right edge */
+  .cert-links{
+    display:flex;align-items:center;justify-content:space-between;
+    gap:14px 18px;flex-wrap:wrap;
+  }
+
+  /* ---------- PROJECT CARDS ---------- */
+  .proj-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:18px;
+  }
+
+  .proj-card{
+    background:var(--card);
+    border:1px solid #e7e4d8;
+    border-radius:var(--radius);
+    padding:22px 24px;
+    display:flex;
+    flex-direction:column;
+    gap:0;
+    transition:border-color .15s ease, transform .15s ease;
+  }
+  .proj-card:hover{border-color:var(--teal-bright);transform:translateY(-2px)}
+
+  .proj-top{
+    display:flex;justify-content:space-between;align-items:flex-start;
+    gap:12px;margin-bottom:14px;
+  }
+  .proj-kind{
+    font-family:'JetBrains Mono',monospace;
+    font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--teal);padding-top:3px;
+  }
+
+  .proj-flag{
+    font-family:'JetBrains Mono',monospace;
+    font-size:10px;letter-spacing:.08em;text-transform:uppercase;
+    border-radius:5px;
+    padding:3px 9px;
+    white-space:nowrap;
+    flex-shrink:0;
+  }
+  .proj-flag.pro{
+    background:var(--teal-faint);
+    color:var(--teal);
+  }
+  .proj-flag.personal{
+    background:#ece9de;
+    color:var(--muted);
+  }
+
+  .proj-group{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:var(--muted);
+    display:flex;align-items:center;gap:14px;
+    margin:36px 0 18px;
+  }
+  .proj-group:first-of-type{margin-top:4px}
+  .proj-group::after{content:"";flex:1;height:1px;background:#dcdacf}
+
+  .proj-name{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:600;font-size:18px;line-height:1.25;
+    color:var(--text);margin-bottom:10px;
+  }
+
+  .proj-desc{
+    font-size:14px;color:#3c4a53;line-height:1.6;
+    margin-bottom:16px;flex:1;
+  }
+
+  .proj-links{
+    display:flex;align-items:center;gap:18px;flex-wrap:wrap;
+    margin-top:auto;
+  }
+  .proj-link{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;color:var(--teal);
+    display:inline-flex;align-items:center;gap:7px;
+    transition:gap .15s ease;
+  }
+  .proj-link:hover{gap:11px}
+  .proj-link svg{width:13px;height:13px;flex-shrink:0}
+
+  /* footer */
+  .foot{
+    margin-top:64px;padding-top:24px;border-top:1px solid #dcdacf;
+    font-family:'JetBrains Mono',monospace;
+    font-size:11.5px;color:var(--muted-light);
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;
+  }
+
+  /* ---------- RESPONSIVE ---------- */
+  @media(max-width:900px){
+    .layout{flex-direction:column}
+    .sidebar{
+      position:static;width:100%;
+      padding:36px 28px;
+    }
+    .side-nav{display:none}
+    .side-foot{margin-top:30px}
+    .content{margin-left:0;padding:44px 28px 60px;max-width:100%}
+  }
+  @media(max-width:560px){
+    .skills-grid,.cert-grid,.proj-grid{grid-template-columns:1fr}
+    .name{font-size:30px}
+    .lead{font-size:18px}
+    .content{padding:36px 22px 50px}
+  }
+
+  @media(prefers-reduced-motion:reduce){
+    *{transition:none!important;scroll-behavior:auto}
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+
+  <!-- ================= SIDEBAR ================= -->
+  <aside class="sidebar">
+    <h1 class="name">Brannon<br>Breau</h1>
+    <div class="role">ServiceNow Platform Developer</div>
+    <div class="rule"></div>
+
+    <ul class="contact">
+      <li>
+        <span class="ic">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+        </span>
+        <a href="mailto:brannon.breau@gmail.com">brannon.breau@gmail.com</a>
+      </li>
+      <li>
+        <span class="ic">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L20 13l2 5v-1a2 2 0 0 1-2 2A16 16 0 0 1 4 6a2 2 0 0 1 1-2Z"/></svg>
+        </span>
+        <a href="tel:+15618090683">(561) 809-0683</a>
+      </li>
+      <li>
+        <span class="ic">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 10v7M7 7v.01M11 17v-4a2 2 0 0 1 4 0v4M11 17v-7"/></svg>
+        </span>
+        <a href="https://linkedin.com/in/bbreau" target="_blank" rel="noopener">linkedin</a>
+      </li>
+      <li>
+        <span class="ic">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.37.5 0 5.78 0 12.29c0 5.2 3.44 9.61 8.21 11.17.6.11.82-.26.82-.58 0-.28-.01-1.04-.02-2.04-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.33-1.76-1.33-1.76-1.09-.74.08-.73.08-.73 1.2.09 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.5 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6.01 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.66.25 2.88.12 3.18.77.84 1.23 1.91 1.23 3.22 0 4.61-2.81 5.62-5.49 5.92.43.37.81 1.1.81 2.22 0 1.61-.01 2.9-.01 3.29 0 .32.22.7.83.58A12.01 12.01 0 0 0 24 12.29C24 5.78 18.63.5 12 .5z"/></svg>
+        </span>
+        <a href="https://github.com/brannon-breau" target="_blank" rel="noopener">github</a>
+      </li>
+      <li>
+        <span class="ic">
+          <svg viewBox="0 0 48 48" aria-hidden="true"><path fill="currentColor" d="m42,37c0,2.76-2.24,5-5,5H11c-2.76,0-5-2.24-5-5V11c0-2.76,2.24-5,5-5h26c2.76,0,5,2.24,5,5v26Z"/><path fill="var(--ink)" d="m33.77,27.04c-.71-.5-1.68-.32-2.18.39-2.14,2.96-5.22,5.57-9.58,5.57s-4.62-7.88-2-13c1.61-3.14,3.87-5.73,5.84-5.72,1.39,0,2.18,1.26,1.8,2.6-.46,1.63-.51,2.72-.51,2.81-.04.96.71,1.77,1.68,1.8.02,0,.04.01.07.01.93,0,1.7-.74,1.74-1.68,0-.03.18-3.31,2.78-6.77.63-.84.39-2.07-.57-2.59-.77-.42-1.75-.14-2.27.56-.15.2-.29.39-.42.59-.14.2-.4.27-.62.17-7.7-3.47-12.07,3.86-13.51,7.23-3,7-3,18,5.62,18,7.22,0,10.63-4.75,12.6-7.79.46-.71.27-1.66-.42-2.14-.01,0-.02-.02-.03-.02Z"/></svg>
+        </span>
+        <a href="https://www.credly.com/users/brannon-breau" target="_blank" rel="noopener">credly</a>
+      </li>
+    </ul>
+
+    <a class="download" href="resume/Brannon_Breau_Resume.pdf"  target="_blank" rel="noopener" download>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14"/></svg>
+      Download Resume (PDF)
+    </a>
+    <div class="download-note" id="resume-updated">Last updated: July 16, 2026</div>
+
+    <nav>
+      <ul class="side-nav">
+        <li><a href="#summary"><span class="num">01</span> Summary</a></li>
+        <li><a href="#skills"><span class="num">02</span> Technical Skills</a></li>
+        <li><a href="#experience"><span class="num">03</span> Experience</a></li>
+        <li><a href="#education"><span class="num">04</span> Education</a></li>
+        <li><a href="#certifications"><span class="num">05</span> Certifications</a></li>
+        <li><a href="#projects"><span class="num">06</span> Notable Projects</a></li>
+        <li><a href="sn-reference.html"><span class="num">07</span> ServiceNow Dev Reference</a></li>
+      </ul>
+    </nav>
+
+    <div class="side-foot">
+      <div class="avail">Open to opportunities</div>
+      <div style="margin-top:8px">10+ yrs IT · 7+ yrs ServiceNow</div>
+      <div style="height:1px;background:var(--teal-bright);margin-top:16px;opacity:.5"></div>
+      <div class="cert-badges">
+        <a href="certs/SN_CSA.pdf" target="_blank" rel="noopener" title="Certified System Administrator"><img src="images/SN_CSA.png" alt="CSA badge"></a>
+        <a href="certs/SN_CIS_ITSM.pdf" target="_blank" rel="noopener" title="CIS — ITSM"><img src="images/SN_CIS_ITSM.png" alt="CIS ITSM badge"></a>
+        <a href="certs/SN_CIS_CSM.pdf" target="_blank" rel="noopener" title="CIS — CSM"><img src="images/SN_CIS_CSM.png" alt="CIS CSM badge"></a>
+        <a href="certs/SN_CIS_DF.pdf" target="_blank" rel="noopener" title="CIS — DF"><img src="images/SN_CIS_DF.png" alt="CIS DF badge"></a>
+        </div>
+        <div style="height:1px;background:var(--teal-bright);margin-top:16px;opacity:.5"></div>
+        <div class="cert-badges">
+        <a href="certs/SN_MC_Flow_Designer.pdf" target="_blank" rel="noopener" title="Micro-Cert: Flow Designer"><img src="images/SN_MC_Flow_Designer.png" alt="Flow Designer badge"></a>
+        <a href="certs/SN_MC_ATF.pdf" target="_blank" rel="noopener" title="Micro-Cert: ATF"><img src="images/SN_MC_ATF.png" alt="ATF badge"></a>
+        <a href="certs/SN_MC_Agile.pdf" target="_blank" rel="noopener" title="Micro-Cert: Agile &amp; Test Management"><img src="images/SN_MC_Agile.png" alt="Agile badge"></a>
+        <a href="certs/SN_MC_CMDB_Health.pdf" target="_blank" rel="noopener" title="Micro-Cert: CMDB Health"><img src="images/SN_MC_CMDB_Health.png" alt="CMDB Health badge"></a>
+        <a href="certs/SN_MC_Config_CMDB.pdf" target="_blank" rel="noopener" title="Micro-Cert: Configure the CMDB"><img src="images/SN_MC_Config_CMDB.png" alt="Configure CMDB badge"></a>
+      </div>
+      <div style="height:1px;background:var(--teal-bright);margin-top:16px;opacity:.5"></div>
+        <div class="cert-badges">
+          <a href="certs/SN_SC_DF.pdf" target="_blank" rel="noopener" title="Suite Certification — DF"><img src="images/SN_SC_DF.png" alt="Suite Cert DF badge"></a>
+        </div>
+    </div>
+  </aside>
+
+  <!-- ================= MAIN ================= -->
+  <main class="content">
+
+    <!-- ================= 01 — Professional Summary ================= -->
+
+    <section class="section" id="summary">
+      <div class="sec-label">01 — Professional Summary</div>
+      <p class="lead">
+        <strong>ServiceNow Developer with 10+ years in IT</strong> and 7+ years designing, building, and
+        supporting solutions on the platform. Strong in JavaScript development, ITSM process
+        implementation, Flow Designer automation, and REST/SOAP integrations — translating business
+        requirements into scalable, secure, and maintainable solutions across the full application lifecycle.
+      </p>
+    </section>
+
+    <!-- ================= 02 — Technical Skills ================= -->
+
+    <section class="section" id="skills">
+      <div class="sec-label">02 — Technical Skills</div>
+      <div class="skills-grid">
+        <div class="skill-card">
+          <h4>ServiceNow</h4>
+          <div class="tags">
+            <span class="tag">ITSM</span><span class="tag">CSM</span><span class="tag">Service Catalog</span>
+            <span class="tag">Flow Designer</span><span class="tag">Business Rules</span>
+            <span class="tag">Client Scripts</span><span class="tag">UI Policies</span>
+            <span class="tag">ACLs</span><span class="tag">Update Sets</span>
+            <span class="tag">IntegrationHub</span><span class="tag">MID Server</span>
+            <span class="tag">ATF</span><span class="tag">Service Portal</span>
+            <span class="tag">Reports &amp; Dashboards</span>
+          </div>
+        </div>
+        <div class="skill-card">
+          <h4>Development</h4>
+          <div class="tags">
+            <span class="tag">JavaScript</span><span class="tag">REST APIs</span>
+            <span class="tag">SOAP APIs</span><span class="tag">JSON</span>
+            <span class="tag">HTML</span><span class="tag">CSS</span>
+            
+          </div>
+        </div>
+        <div class="skill-card">
+          <h4>Practices</h4>
+          <div class="tags">
+            <span class="tag">SDLC</span><span class="tag">Agile / Scrum</span>
+            <span class="tag">ITIL</span><span class="tag">Root Cause Analysis</span>
+            <span class="tag">Testing &amp; Validation</span><span class="tag">Technical Documentation</span>
+          </div>
+        </div>
+        <div class="skill-card">
+          <h4>Tools</h4>
+          <div class="tags">
+            <span class="tag">Jira</span><span class="tag">PowerShell</span>
+            <span class="tag">Active Directory</span><span class="tag">Exchange</span>
+            <span class="tag">VMware</span><span class="tag">Infobox</span>
+            <span class="tag">LDAP</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= 03 — Work Experience ================= -->
+
+    <section class="section" id="experience">
+      <div class="sec-label">03 — Work Experience</div>
+      <div class="timeline">
+
+        <div class="job">
+          <div class="job-head">
+            <div class="job-title">ServiceNow Developer / Consultant</div>
+            <div class="job-date">Nov 2022 — Present</div>
+          </div>
+          <div class="job-meta">Techport Thirteen Inc. · Berkeley Lake, GA (Remote)</div>
+          <ul>
+            <li>Design, develop, and customize ServiceNow applications using Business Rules, Client Scripts, UI Policies, Catalog Items, and Flow Designer to meet evolving business requirements.</li>
+            <li>Configure and enhance core ITSM processes — Incident, Problem, Change, Request, and Knowledge — in alignment with ITIL best practices.</li>
+            <li>Build and maintain Flow Designer flows and subflows to automate manual processes and improve operational efficiency.</li>
+            <li>Develop and support integrations with external systems using REST/SOAP APIs, IntegrationHub, and MID Server.
+              <ul class="sub-list">
+                <li>Jira</li>
+                <li>Infobox</li>
+                <li>Ldap</li>
+                <li>LogicMonitor</li>
+                <li>AdobeSign</li>
+                <li>Microsoft 365</li>
+              </ul>
+            </li>
+            <li>Translate business requirements into technical design documents and scalable platform solutions.</li>
+            <li>Support platform upgrades through impact analysis, testing, remediation, and validation of customizations.</li>
+            <li>Participate in Agile ceremonies and collaborate with QA to validate solutions using ATF and manual testing.</li>
+          </ul>
+        </div>
+
+        <div class="job">
+          <div class="job-head">
+            <div class="job-title">ServiceNow Administrator / Developer</div>
+            <div class="job-date">Jan 2018 — Nov 2022</div>
+          </div>
+          <div class="job-meta">Morgan &amp; Morgan PA · Orlando, FL</div>
+          <ul>
+            <li>Administered and enhanced the ServiceNow platform to improve ITSM service delivery and system performance.</li>
+            <li>Led multiple platform upgrades, instance clones, and Update Set migrations across environments.</li>
+            <li>Developed JavaScript-based Business Rules, Client Scripts, and automation to streamline service desk operations.</li>
+            <li>Develop and support integrations with external systems using REST/SOAP APIs and MID Server.
+              <ul class="sub-list">
+                <li>Jira</li>
+                <li>Ldap</li>
+                <li>Microsoft 365</li>
+              </ul>
+            </li>
+            <li>Implemented auto-assignment logic, notifications, and Service Portal enhancements for improved user experience.</li>
+          </ul>
+
+          <div class="sub-role">
+            <div class="job-head">
+              <div class="job-title" style="font-size:16px">Help Desk Team Lead</div>
+              <div class="job-date">Sep 2017 — Jan 2018</div>
+            </div>
+            <ul style="margin-top:10px">
+              <li>Led the initial implementation and development of the ServiceNow platform for a 2,700-user environment.</li>
+              <li>Managed a team of 30 Tier I and Tier II agents and served as escalation point for complex issues.</li>
+            </ul>
+          </div>
+
+          <div class="sub-role">
+            <div class="job-head">
+              <div class="job-title" style="font-size:16px">Tier II / Tier I Help Desk Agent</div>
+              <div class="job-date">Feb 2015 — Sep 2017</div>
+            </div>
+            <ul style="margin-top:10px">
+              <li>Resolved escalated hardware, software, and network issues for 2,700 users.</li>
+              <li>Authored and maintained knowledge base articles and documentation.</li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= 04 — Education ================= -->
+
+    <section class="section" id="education">
+      <div class="sec-label">04 — Education</div>
+      <div class="edu">
+        <div>
+          <div class="edu-school">Palm Beach State College</div>
+          <div class="edu-degree">Associate in Science — Network Administration · Lake Worth, FL</div>
+        </div>
+        <div class="edu-date">Dec 2014</div>
+      </div>
+    </section>
+
+    <!-- ================= 05 — Certifications ================= -->
+
+    <section class="section" id="certifications">
+      <div class="sec-label">05 — Certifications &amp; Accreditations</div>
+
+      <!-- ---------- GROUP 1: MAINLINE CERTIFICATIONS ---------- -->
+      <div class="cert-grid">
+        <div class="cert">
+          <div class="cert-top">
+            <span class="cert-kind">Mainline Certification</span>
+            <span class="cert-year">2019 — 2026</span>
+          </div>
+          <div class="cert-name">Certified System Administrator <span style="color:var(--muted);font-size:13px">(with Deltas)</span></div>
+          <div class="cert-links">
+            <a class="cert-link" href="certs/SN_CSA.pdf" target="_blank" rel="noopener">View credential
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M7 7h10v10"/></svg>
+            </a>
+            <a class="cert-link" href="certs/SN_CSA_Delta_2026.pdf" target="_blank" rel="noopener">View Latest Delta
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M7 7h10v10"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="cert">
+          <div class="cert-top">
+            <span class="cert-kind">Mainline Certification</span>
+            <span class="cert-year">2023 — 2026</span>
+          </div>
+          <div class="cert-name">Certified Implementation Specialist — ITSM <span style="color:var(--muted);font-size:13px">(with Deltas)</span></div>
+          <div class="cert-links">
+            <a class="cert-link" href="certs/SN_CIS_ITSM.pdf" target="_blank" rel="noopener">View credential
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M7 7h10v10"/></svg>
+            </a>
+            <a class="cert-link" href="certs/SN_CIS_ITSM.pdf" target="_blank" rel="noopener">View Latest Delta
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M7 7h10v10"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="cert">
+          <div class="cert-top">
+            <span class="cert-kind">Mainline Certification</span>
+            <span class="cert-year">2026</span>
+          </div>
+          <div class="cert-name">Certified Implementation Specialist — CSM</div>
+          <div class="cert-links">
+            <a class="cert-link" href="certs/SN_CIS_CSM.pdf" target="_blank" rel="noopener">View credential
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M7 7h10v10"/></svg>
+            </a>
+            <!-- <a class="cert-link" href="#" target="_blank" rel="noopener">View Latest Delta
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M7 7h10v10"/></svg>
+            </a> -->
+          </div>
+        </div>
+
+      <div class="cert">
+          <div class="cert-top">
+            <span class="cert-kind">Mainline Certification</span>
+            <span class="cert-year">2026</span>
+          </div>
+          <div class="cert-name">Certified Implementation Specialist — DF</div>
+          <div class="cert-links">
+            <a class="cert-link" href="certs/SN_CIS_DF.pdf" target="_blank" rel="noopener">View credential
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M7 7h10v10"/></svg>
+            </a>
+            <!-- <a class="cert-link" href="#" target="_blank" rel="noopener">View Latest Delta
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M7 7h10v10"/></svg>
+            </a> -->
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- GROUP 2: MICRO-CERTIFICATIONS ---------- -->
+      <div class="cert-group"></div>
+      <div class="cert-grid">
+        <div class="cert">
+          <div class="cert-top">
+            <span class="cert-kind">Micro-Certification</span>
+            <span class="cert-year">2019</span>
+          </div>
+          <div class="cert-name">Flow Designer</div>
+          <a class="cert-link" href="certs/SN_MC_Flow_Designer.pdf" target="_blank" rel="noopener">View credential
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M7 7h10v10"/></svg>
+          </a>
+        </div>
+
+        <div class="cert">
+          <div class="cert-top">
+            <span class="cert-kind">Micro-Certification</span>
+            <span class="cert-year">2024</span>
+          </div>
+          <div class="cert-name">Automated Test Framework (ATF)</div>
+          <a class="cert-link" href="certs/SN_MC_ATF.pdf" target="_blank" rel="noopener">View credential
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M7 7h10v10"/></svg>
+          </a>
+        </div>
+
+        <div class="cert">
+          <div class="cert-top">
+            <span class="cert-kind">Micro-Certification</span>
+            <span class="cert-year">2025</span>
+          </div>
+          <div class="cert-name">Agile &amp; Test Management Implementation</div>
+          <a class="cert-link" href="certs/SN_MC_Agile.pdf" target="_blank" rel="noopener">View credential
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M7 7h10v10"/></svg>
+          </a>
+        </div>
+
+        <div class="cert">
+          <div class="cert-top">
+            <span class="cert-kind">Micro-Certification</span>
+            <span class="cert-year">2026</span>
+          </div>
+          <div class="cert-name">CMDB Health</div>
+          <a class="cert-link" href="certs/SN_MC_CMDB_Health.pdf" target="_blank" rel="noopener">View credential
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M7 7h10v10"/></svg>
+          </a>
+        </div>
+
+        <div class="cert">
+          <div class="cert-top">
+            <span class="cert-kind">Micro-Certification</span>
+            <span class="cert-year">2026</span>
+          </div>
+          <div class="cert-name">Configure the CMDB</div>
+          <a class="cert-link" href="certs/SN_MC_Config_CMDB.pdf" target="_blank" rel="noopener">View credential
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M7 7h10v10"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- ---------- GROUP 3: SUITE CERTIFICATIONS ---------- -->
+      <div class="cert-group"></div>
+      <div class="cert-grid">
+        <div class="cert">
+          <div class="cert-top">
+            <span class="cert-kind">Suite Certification</span>
+            <span class="cert-year">2026</span>
+          </div>
+          <div class="cert-name">Data Foundations Professional</div>
+          <a class="cert-link" href="certs/SN_SC_DF.pdf" target="_blank" rel="noopener">View credential
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M7 7h10v10"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- ---------- GROUP 4: ACCREDITATION ---------- -->
+      <div class="cert-group"></div>
+      <div class="cert-grid">
+        <div class="cert">
+          <div class="cert-top">
+            <span class="cert-kind">Accreditation</span>
+            <span class="cert-year">2025</span>
+          </div>
+          <div class="cert-name">RiseUp with ServiceNow Bootcamp</div>
+          <a class="cert-link" href="certs/SN_RiseUp_Accred.pdf" target="_blank" rel="noopener">View accreditation
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M7 7h10v10"/></svg>
+          </a>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ================= 06 — Notable Projects ================= -->
+
+    <section class="section" id="projects">
+      <div class="sec-label">06 — Notable Projects</div>
+      <p class="lead">
+        A selection of <strong>notable projects and builds</strong> — professional work worth highlighting and personal things I found interesting enough to dig into.
+      </p>
+
+      <!-- ---------- PROFESSIONAL ---------- -->
+      <div class="proj-group">Professional</div>
+      <div class="proj-grid">
+
+        <div class="proj-card">
+          <div class="proj-top">
+            <span class="proj-kind">ServiceNow</span>
+            <span class="proj-flag pro">Professional</span>
+          </div>
+          <div class="proj-name">Jira – ServiceNow Integration</div>
+          <p class="proj-desc">
+            A scripted REST integration that lets Jira push issue events straight into ServiceNow, automatically creating and correlating an Incident for every issue so both systems stay in sync without manual re-entry.
+          </p>
+          <div class="tags">
+            <span class="tag">Scripted REST API</span>
+            <span class="tag">REST Message</span>
+            <span class="tag">Jira Cloud API</span>
+            <span class="tag">JavaScript</span>
+          </div>
+          <div class="proj-links">
+            <a class="proj-link" href="projects/project-jira_sn_int.html">
+              View project
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M7 7h10v10"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="proj-card">
+          <div class="proj-top">
+            <span class="proj-kind">ServiceNow</span>
+            <span class="proj-flag pro">Professional</span>
+          </div>
+          <div class="proj-name">HR Onboarding Automation</div>
+          <p class="proj-desc">
+            A scripted ServiceNow catalog request that turns a single new-hire submission into a fully provisioned employee — phone extension, fax line, copier billing code, and call-routing label — with multi-office resource pools resolved automatically.
+          </p>
+          <div class="tags">
+            <span class="tag">ServiceNow</span>
+            <span class="tag">Catalog Item Producer</span>
+            <span class="tag">Business Rules</span>
+            <span class="tag">JavaScript</span>
+          </div>
+          <div class="proj-links">
+            <a class="proj-link" href="projects/project-sn-hr.html">
+              View project
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M7 7h10v10"/></svg>
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ---------- PERSONAL ---------- -->
+      <div class="proj-group">Personal</div>
+      <div class="proj-grid">
+
+        <div class="proj-card">
+          <div class="proj-top">
+            <span class="proj-kind">Raspberry Pi</span>
+            <span class="proj-flag personal">Personal</span>
+          </div>
+          <div class="proj-name">RFID Music Player</div>
+          <p class="proj-desc">
+            A Raspberry Pi jukebox that lets you swap songs, playlists, and system actions just by tapping RFID key fobs and cards against an RC522 reader — no screen, buttons, or keyboard needed.
+          </p>
+          <div class="tags">
+            <span class="tag">Python</span>
+            <span class="tag">Linux</span>
+            <span class="tag">Hardware</span>
+          </div>
+          <div class="proj-links">
+            <a class="proj-link" href="projects/project_rfid_player.html">
+              View project
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M7 7h10v10"/></svg>
+            </a>
+            <a class="proj-link" href="https://github.com/brannon-breau/RFIDMusicPlayer" target="_blank" rel="noopener" style="margin-left:auto">
+              GitHub
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M7 7h10v10"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="proj-card">
+          <div class="proj-top">
+            <span class="proj-kind">ServiceNow</span>
+            <span class="proj-flag personal">Personal</span>
+          </div>
+          <div class="proj-name">ServiceNow Jeopardy</div>
+          <p class="proj-desc">
+            A custom ServiceNow scoped application that turns the platform itself into a fully playable Jeopardy-style trivia game — configurable board, wagering, host controls, and a live Service Portal game board.
+          </p>
+          <div class="tags">
+            <span class="tag">Scoped Application</span>
+            <span class="tag">Service Portal</span>
+            <span class="tag">Flow Designer</span>
+          </div>
+          <div class="proj-links">
+            <a class="proj-link" href="projects/project-jeopardy.html">
+              View project
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M7 7h10v10"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="proj-card">
+          <div class="proj-top">
+            <span class="proj-kind">ESP8266 / Hardware</span>
+            <span class="proj-flag personal">Personal</span>
+          </div>
+          <div class="proj-name">Fiber-Optic Digital Clock</div>
+          <p class="proj-desc">
+            A DIY WiFi/NTP-synced RGB fiber-optic digital clock — a 256-pixel LED matrix renders glowing numerals with animated rainbow effects, housed in a multi-part 3D-printed enclosure designed in Fusion 360.
+          </p>
+          <div class="tags">
+            <span class="tag">ESP8266</span>
+            <span class="tag">Arduino C++</span>
+            <span class="tag">NeoPixel</span>
+            <span class="tag">Fusion 360</span>
+          </div>
+          <div class="proj-links">
+            <a class="proj-link" href="projects/project-clock.html">
+              View project
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M7 7h10v10"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- ============================================================
+             PROJECTS IN PROGRESS — hidden until each build is finished
+             ============================================================
+             The project cards below (Zombie Outbreak Manager through
+             Time Travel Incident Management) are commented out because
+             those builds are not complete yet.
+
+             TO RE-ENABLE A PROJECT ONCE IT IS DONE:
+               1. Cut that project's  <div class="proj-card"> ... </div>
+                  block out of the commented section below.
+               2. Paste it back into the .proj-grid above, in the
+                  position you want it to appear.
+               3. Confirm its detail page exists at
+                  projects/<project-file>.html
+               4. Remove this note once every project is restored.
+
+             Currently hidden (7):
+               Zombie Outbreak Manager           projects/project-zombie.html
+               Theme Park Ride Operations System  projects/project-theme-park.html
+               Space Mission Control              projects/project-mission-control.html
+               Ghost Hunting Case Tracker         projects/project-ghost-hunt.html
+               Monster Containment Agency         projects/project-monster.html
+               Alien Abduction Service Desk       projects/project-alien.html
+               Time Travel Incident Management    projects/project-time-travel.html
+             ============================================================ -->
+        <!-- BEGIN HIDDEN PROJECT CARDS - do not delete; uncomment as projects ship
+
+        <div class="proj-card">
+          <div class="proj-top">
+            <span class="proj-kind">ServiceNow</span>
+            <span class="proj-flag personal">Personal</span>
+          </div>
+          <div class="proj-name">Zombie Outbreak Manager</div>
+          <p class="proj-desc">
+            A custom scoped application that turns ServiceNow into an outbreak-response command center — tracking infection events, coordinating response teams, managing containment, and escalating critical outbreaks through automated workflows.
+          </p>
+          <div class="tags">
+            <span class="tag">Scoped Application</span>
+            <span class="tag">Flow Designer</span>
+            <span class="tag">Workspace</span>
+          </div>
+          <div class="proj-links">
+            <a class="proj-link" href="projects/project-zombie.html">
+              View project
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M7 7h10v10"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="proj-card">
+          <div class="proj-top">
+            <span class="proj-kind">ServiceNow</span>
+            <span class="proj-flag personal">Personal</span>
+          </div>
+          <div class="proj-name">Theme Park Ride Operations System</div>
+          <p class="proj-desc">
+            A ServiceNow operations application for amusement park attractions — combining ride inspections, maintenance, downtime, incidents, and preventative maintenance into one operational platform.
+          </p>
+          <div class="tags">
+            <span class="tag">Scoped Application</span>
+            <span class="tag">Scheduled Jobs</span>
+            <span class="tag">Reports &amp; Dashboards</span>
+          </div>
+          <div class="proj-links">
+            <a class="proj-link" href="projects/project-theme-park.html">
+              View project
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M7 7h10v10"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="proj-card">
+          <div class="proj-top">
+            <span class="proj-kind">ServiceNow</span>
+            <span class="proj-flag personal">Personal</span>
+          </div>
+          <div class="proj-name">Space Mission Control</div>
+          <p class="proj-desc">
+            A ServiceNow mission-operations platform coordinating spacecraft, crew, objectives, life-support systems, supplies, anomalies, and emergency response from pre-launch through mission completion.
+          </p>
+          <div class="tags">
+            <span class="tag">Scoped Application</span>
+            <span class="tag">IntegrationHub</span>
+            <span class="tag">REST API</span>
+          </div>
+          <div class="proj-links">
+            <a class="proj-link" href="projects/project-mission-control.html">
+              View project
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M7 7h10v10"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="proj-card">
+          <div class="proj-top">
+            <span class="proj-kind">ServiceNow</span>
+            <span class="proj-flag personal">Personal</span>
+          </div>
+          <div class="proj-name">Ghost Hunting Case Tracker</div>
+          <p class="proj-desc">
+            A paranormal investigation case-management system built entirely in ServiceNow — managing reported hauntings, investigators, evidence, equipment, scheduling, and case resolution.
+          </p>
+          <div class="tags">
+            <span class="tag">Case Management</span>
+            <span class="tag">Knowledge Management</span>
+            <span class="tag">Flow Designer</span>
+          </div>
+          <div class="proj-links">
+            <a class="proj-link" href="projects/project-ghost-hunt.html">
+              View project
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M7 7h10v10"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="proj-card">
+          <div class="proj-top">
+            <span class="proj-kind">ServiceNow</span>
+            <span class="proj-flag personal">Personal</span>
+          </div>
+          <div class="proj-name">Monster Containment Agency</div>
+          <p class="proj-desc">
+            A high-security containment operations platform in ServiceNow — cataloging dangerous entities, managing facilities, scheduling inspections, and automatically responding when something gets out.
+          </p>
+          <div class="tags">
+            <span class="tag">Scoped Application</span>
+            <span class="tag">Field-Level Security</span>
+            <span class="tag">REST API</span>
+          </div>
+          <div class="proj-links">
+            <a class="proj-link" href="projects/project-monster.html">
+              View project
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M7 7h10v10"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="proj-card">
+          <div class="proj-top">
+            <span class="proj-kind">ServiceNow</span>
+            <span class="proj-flag personal">Personal</span>
+          </div>
+          <div class="proj-name">Alien Abduction Service Desk</div>
+          <p class="proj-desc">
+            A ServiceNow ITSM implementation for an unconventional customer base — managing UFO sightings, encounters, abductions, implants, and full-scale extraterrestrial incidents through service-management processes.
+          </p>
+          <div class="tags">
+            <span class="tag">ITSM</span>
+            <span class="tag">Major Incident Management</span>
+            <span class="tag">CMDB</span>
+          </div>
+          <div class="proj-links">
+            <a class="proj-link" href="projects/project-alien.html">
+              View project
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M7 7h10v10"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="proj-card">
+          <div class="proj-top">
+            <span class="proj-kind">ServiceNow</span>
+            <span class="proj-flag personal">Personal</span>
+          </div>
+          <div class="proj-name">Time Travel Incident Management</div>
+          <p class="proj-desc">
+            A custom ServiceNow application for managing temporal incidents, competing timelines, paradoxes, and displaced travelers — with automated anomaly detection and timeline-restoration workflows.
+          </p>
+          <div class="tags">
+            <span class="tag">Scoped Application</span>
+            <span class="tag">Audit History</span>
+            <span class="tag">Approvals</span>
+          </div>
+          <div class="proj-links">
+            <a class="proj-link" href="projects/project-time-travel.html">
+              View project
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M7 7h10v10"/></svg>
+            </a>
+          </div>
+        </div>
+        END HIDDEN PROJECT CARDS -->
+
+      </div>
+    </section>
+
+    <div class="foot">
+      <span>©2026 Brannon Breau &amp;&amp; geekingthings.com</span>
+    </div>
+
+  </main>
+</div>
+<script>
+(function(){
+  var el = document.getElementById('resume-updated');
+  if(!el) return;
+  fetch('resume/Brannon_Breau_Resume.pdf', {method:'HEAD', cache:'no-store'})
+    .then(function(res){
+      var lm = res.headers.get('Last-Modified');
+      if(!lm) return;
+      var text = new Date(lm).toLocaleDateString('en-US', {year:'numeric', month:'long', day:'numeric'});
+      el.textContent = 'Last updated: ' + text;
+    })
+    .catch(function(){});
+})();
+</script>
+</body>
+</html>

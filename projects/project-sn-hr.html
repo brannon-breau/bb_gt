@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- TEMPLATE: Change this title for each project -->
+<title>HR Onboarding Automation — Brannon Breau</title>
+<link rel="apple-touch-icon" sizes="180x180" href="../images/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../images/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="../images/favicon-16x16.png">
+<link rel="shortcut icon" href="../images/favicon.ico">
+<link rel="manifest" href="../images/site.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;450;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#15212c;
+    --ink-soft:#1d2c39;
+    --ink-line:#2b3c4a;
+    --paper:#f4f2ec;
+    --card:#ffffff;
+    --text:#1b2a33;
+    --muted:#5d6e78;
+    --muted-light:#8a99a2;
+    --teal:#0f7d72;
+    --teal-bright:#15b3a3;
+    --teal-faint:#e3f1ee;
+    --radius:14px;
+    --sidebar-w:340px;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Inter',system-ui,sans-serif;
+    background:var(--paper);
+    color:var(--text);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;text-decoration:none}
+
+  .layout{display:flex;min-height:100vh}
+
+  /* ---------- SIDEBAR ---------- */
+  .sidebar{
+    width:var(--sidebar-w);
+    flex-shrink:0;
+    background:var(--ink);
+    color:#dfe7ec;
+    position:fixed;
+    top:0;left:0;bottom:0;
+    display:flex;
+    flex-direction:column;
+    padding:44px 36px;
+    overflow-y:auto;
+  }
+
+  .name{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:600;font-size:34px;
+    line-height:1.08;letter-spacing:-.02em;
+    color:#fff;margin-bottom:10px;
+  }
+  .role{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:400;font-size:15px;
+    color:var(--teal-bright);margin-bottom:30px;
+  }
+  .rule{height:1px;background:var(--ink-line);margin:6px 0 26px}
+
+  .contact{
+    list-style:none;
+    font-family:'JetBrains Mono',monospace;
+    font-size:12.5px;
+    display:flex;flex-direction:column;gap:14px;
+    margin-bottom:34px;
+  }
+  .contact li{display:flex;align-items:flex-start;gap:11px;color:#b8c4cc}
+  .contact .ic{width:16px;flex-shrink:0;color:var(--teal-bright);margin-top:1px}
+  .contact a{transition:color .15s ease;word-break:break-all}
+  .contact a:hover{color:#fff}
+
+  .download{
+    display:flex;align-items:center;justify-content:center;gap:10px;
+    background:var(--teal-bright);color:#06241f;
+    font-weight:600;font-size:14.5px;
+    padding:14px 18px;border-radius:10px;
+    transition:transform .15s ease, background .15s ease;
+    margin-bottom:14px;
+  }
+  .download:hover{background:#1ccdb9;transform:translateY(-1px)}
+  .download svg{width:17px;height:17px}
+  .download-note{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--muted-light);text-align:center;margin-bottom:34px}
+
+  .side-nav{
+    list-style:none;display:flex;flex-direction:column;gap:3px;
+    margin-bottom:auto;
+  }
+  .side-nav a{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;letter-spacing:.04em;
+    color:#92a2ab;padding:7px 0;
+    display:flex;align-items:center;gap:12px;
+    transition:color .15s ease;
+  }
+  .side-nav a .num{color:var(--teal);font-size:11px}
+  .side-nav a:hover{color:#fff}
+  .side-nav a.active{color:#fff}
+  .side-nav a.active .num{color:var(--teal-bright)}
+
+  .side-foot{
+    margin-top:34px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;color:var(--muted-light);line-height:1.7;
+  }
+  .avail{color:var(--teal-bright)}
+  .avail::before{
+    content:"";display:inline-block;width:7px;height:7px;border-radius:50%;
+    background:var(--teal-bright);margin-right:7px;vertical-align:1px;
+    box-shadow:0 0 0 3px rgba(21,179,163,.2);
+  }
+  .cert-badges{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+  .cert-badges a{display:block;opacity:.82;transition:opacity .15s ease,transform .15s ease}
+  .cert-badges a:hover{opacity:1;transform:scale(1.06)}
+  .cert-badges img{width:56px;height:56px;object-fit:contain;border-radius:6px}
+
+  /* ---------- MAIN ---------- */
+  .content{
+    margin-left:var(--sidebar-w);
+    flex:1;padding:64px 72px 80px;max-width:960px;
+  }
+
+  /* ---------- BACK LINK ---------- */
+  .back-link{
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;color:var(--muted);
+    margin-bottom:36px;
+    transition:color .15s ease, gap .15s ease;
+  }
+  .back-link:hover{color:var(--teal);gap:12px}
+  .back-link svg{width:14px;height:14px;flex-shrink:0}
+
+  /* ---------- PROJECT HEADER ---------- */
+  .proj-meta{
+    display:flex;align-items:center;gap:12px;
+    margin-bottom:16px;
+  }
+  .proj-flag{
+    font-family:'JetBrains Mono',monospace;
+    font-size:10px;letter-spacing:.08em;text-transform:uppercase;
+    border-radius:5px;padding:3px 9px;
+  }
+  .proj-flag.pro{background:var(--teal-faint);color:var(--teal)}
+  .proj-flag.personal{background:#ece9de;color:var(--muted)}
+  .proj-dot{color:var(--muted-light)}
+  .proj-kind-label{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--muted-light);
+  }
+
+  .proj-title{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;font-size:38px;
+    line-height:1.1;letter-spacing:-.02em;
+    color:var(--text);margin-bottom:14px;
+  }
+
+  .proj-tagline{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:18px;font-weight:400;
+    line-height:1.5;color:var(--muted);
+    max-width:680px;margin-bottom:48px;
+  }
+
+  /* ---------- DETAIL SECTIONS ---------- */
+  .detail-section{margin-bottom:48px}
+
+  .detail-label{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--teal);
+    display:flex;align-items:center;gap:14px;
+    margin-bottom:20px;
+  }
+  .detail-label::after{content:"";flex:1;height:1px;background:#dcdacf}
+
+  .overview-text{
+    font-size:15.5px;line-height:1.75;color:#3c4a53;max-width:700px;
+  }
+
+  /* ---------- CHALLENGE + OUTCOMES ---------- */
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+
+  .info-card{
+    background:var(--card);border:1px solid #e7e4d8;
+    border-radius:var(--radius);padding:24px 26px;
+  }
+  .info-card h4{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--teal);margin-bottom:14px;
+  }
+  .info-card p{font-size:14.5px;line-height:1.7;color:#3c4a53}
+  .info-card ul{list-style:none;display:flex;flex-direction:column;gap:9px}
+  .info-card ul li{
+    position:relative;padding-left:18px;font-size:14.5px;color:#3c4a53;line-height:1.5;
+  }
+  .info-card ul li::before{
+    content:"";position:absolute;left:0;top:8px;
+    width:5px;height:5px;border-radius:1px;background:var(--teal-bright);
+  }
+
+  /* ---------- FEATURES ---------- */
+  .feature-grid{
+    display:grid;grid-template-columns:repeat(2,1fr);gap:14px;
+  }
+  .feature-item{
+    background:var(--card);border:1px solid #e7e4d8;
+    border-radius:var(--radius);padding:20px 22px;
+    display:flex;gap:14px;align-items:flex-start;
+  }
+  .feature-icon{
+    width:36px;height:36px;flex-shrink:0;
+    background:var(--teal-faint);border-radius:8px;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .feature-icon svg{width:17px;height:17px;color:var(--teal)}
+  .feature-item h5{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:600;font-size:15px;color:var(--text);margin-bottom:4px;
+  }
+  .feature-item p{font-size:13.5px;color:var(--muted);line-height:1.5}
+
+  /* ---------- TECH STACK ---------- */
+  .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{
+    font-size:13px;color:#34454f;
+    background:var(--teal-faint);border-radius:6px;
+    padding:5px 12px;white-space:nowrap;
+  }
+
+  /* ---------- LINKS ---------- */
+  .proj-links{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+  .proj-link-btn{
+    display:inline-flex;align-items:center;gap:9px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:13px;font-weight:500;
+    padding:12px 20px;border-radius:10px;
+    transition:transform .15s ease, background .15s ease;
+  }
+  .proj-link-btn.primary{
+    background:var(--teal-bright);color:#06241f;
+  }
+  .proj-link-btn.primary:hover{background:#1ccdb9;transform:translateY(-1px)}
+  .proj-link-btn.secondary{
+    background:var(--card);color:var(--teal);
+    border:1px solid #e7e4d8;
+  }
+  .proj-link-btn.secondary:hover{border-color:var(--teal-bright);transform:translateY(-1px)}
+  .proj-link-btn svg{width:15px;height:15px;flex-shrink:0}
+
+  /* footer */
+  .foot{
+    margin-top:64px;padding-top:24px;border-top:1px solid #dcdacf;
+    font-family:'JetBrains Mono',monospace;
+    font-size:11.5px;color:var(--muted-light);
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;
+  }
+
+  /* ---------- RESPONSIVE ---------- */
+  @media(max-width:900px){
+    .layout{flex-direction:column}
+    .sidebar{position:static;width:100%;padding:36px 28px}
+    .side-nav{display:none}
+    .side-foot{margin-top:30px}
+    .content{margin-left:0;padding:44px 28px 60px;max-width:100%}
+  }
+  @media(max-width:620px){
+    .two-col,.feature-grid{grid-template-columns:1fr}
+    .proj-title{font-size:30px}
+    .content{padding:36px 22px 50px}
+  }
+  @media(prefers-reduced-motion:reduce){
+    *{transition:none!important;scroll-behavior:auto}
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+
+  <!-- ================= SIDEBAR ================= -->
+  <aside class="sidebar">
+    <h1 class="name">Brannon<br>Breau</h1>
+    <div class="role">ServiceNow Platform Developer</div>
+    <div class="rule"></div>
+
+    <ul class="contact">
+      <li>
+        <span class="ic">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+        </span>
+        <a href="mailto:brannon.breau@gmail.com">brannon.breau@gmail.com</a>
+      </li>
+      <li>
+        <span class="ic">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L20 13l2 5v-1a2 2 0 0 1-2 2A16 16 0 0 1 4 6a2 2 0 0 1 1-2Z"/></svg>
+        </span>
+        <a href="tel:+15618090683">(561) 809-0683</a>
+      </li>
+      <li>
+        <span class="ic">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 10v7M7 7v.01M11 17v-4a2 2 0 0 1 4 0v4M11 17v-7"/></svg>
+        </span>
+        <a href="https://linkedin.com/in/bbreau" target="_blank" rel="noopener">linkedin</a>
+      </li>
+      <li>
+        <span class="ic">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.37.5 0 5.78 0 12.29c0 5.2 3.44 9.61 8.21 11.17.6.11.82-.26.82-.58 0-.28-.01-1.04-.02-2.04-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.33-1.76-1.33-1.76-1.09-.74.08-.73.08-.73 1.2.09 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.5 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6.01 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.66.25 2.88.12 3.18.77.84 1.23 1.91 1.23 3.22 0 4.61-2.81 5.62-5.49 5.92.43.37.81 1.1.81 2.22 0 1.61-.01 2.9-.01 3.29 0 .32.22.7.83.58A12.01 12.01 0 0 0 24 12.29C24 5.78 18.63.5 12 .5z"/></svg>
+        </span>
+        <a href="https://github.com/brannon-breau" target="_blank" rel="noopener">github</a>
+      </li>
+      <li>
+        <span class="ic">
+          <svg viewBox="0 0 48 48" aria-hidden="true"><path fill="currentColor" d="m42,37c0,2.76-2.24,5-5,5H11c-2.76,0-5-2.24-5-5V11c0-2.76,2.24-5,5-5h26c2.76,0,5,2.24,5,5v26Z"/><path fill="var(--ink)" d="m33.77,27.04c-.71-.5-1.68-.32-2.18.39-2.14,2.96-5.22,5.57-9.58,5.57s-4.62-7.88-2-13c1.61-3.14,3.87-5.73,5.84-5.72,1.39,0,2.18,1.26,1.8,2.6-.46,1.63-.51,2.72-.51,2.81-.04.96.71,1.77,1.68,1.8.02,0,.04.01.07.01.93,0,1.7-.74,1.74-1.68,0-.03.18-3.31,2.78-6.77.63-.84.39-2.07-.57-2.59-.77-.42-1.75-.14-2.27.56-.15.2-.29.39-.42.59-.14.2-.4.27-.62.17-7.7-3.47-12.07,3.86-13.51,7.23-3,7-3,18,5.62,18,7.22,0,10.63-4.75,12.6-7.79.46-.71.27-1.66-.42-2.14-.01,0-.02-.02-.03-.02Z"/></svg>
+        </span>
+        <a href="https://www.credly.com/users/brannon-breau" target="_blank" rel="noopener">credly</a>
+      </li>
+    </ul>
+
+    <a class="download" href="../resume/Brannon_Breau_Resume.pdf"  target="_blank" rel="noopener" download>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14"/></svg>
+      Download Resume (PDF)
+    </a>
+    <div class="download-note" id="resume-updated">Last updated: July 16, 2026</div>
+
+    <nav>
+      <ul class="side-nav">
+        <li><a href="../index.html#summary"><span class="num">01</span> Summary</a></li>
+        <li><a href="../index.html#skills"><span class="num">02</span> Technical Skills</a></li>
+        <li><a href="../index.html#experience"><span class="num">03</span> Experience</a></li>
+        <li><a href="../index.html#education"><span class="num">04</span> Education</a></li>
+        <li><a href="../index.html#certifications"><span class="num">05</span> Certifications</a></li>
+        <li><a href="../index.html#projects"><span class="num">06</span> Notable Projects</a></li>
+        <li><a href="../sn-reference.html"><span class="num">07</span> ServiceNow Dev Reference</a></li>
+      </ul>
+    </nav>
+
+    <div class="side-foot">
+      <div class="avail">Open to opportunities</div>
+      <div style="margin-top:8px">10+ yrs IT · 7+ yrs ServiceNow</div>
+      <div style="height:1px;background:var(--teal-bright);margin-top:16px;opacity:.5"></div>
+      <div class="cert-badges">
+        <a href="../certs/SN_CSA.pdf" target="_blank" rel="noopener" title="Certified System Administrator"><img src="../images/SN_CSA.png" alt="CSA badge"></a>
+        <a href="../certs/SN_CIS_ITSM.pdf" target="_blank" rel="noopener" title="CIS — ITSM"><img src="../images/SN_CIS_ITSM.png" alt="CIS ITSM badge"></a>
+        <a href="../certs/SN_CIS_CSM.pdf" target="_blank" rel="noopener" title="CIS — CSM"><img src="../images/SN_CIS_CSM.png" alt="CIS CSM badge"></a>
+        <a href="../certs/SN_CIS_DF.pdf" target="_blank" rel="noopener" title="CIS — DF"><img src="../images/SN_CIS_DF.png" alt="CIS DF badge"></a>
+        </div>
+        <div style="height:1px;background:var(--teal-bright);margin-top:16px;opacity:.5"></div>
+        <div class="cert-badges">
+        <a href="../certs/SN_MC_Flow_Designer.pdf" target="_blank" rel="noopener" title="Micro-Cert: Flow Designer"><img src="../images/SN_MC_Flow_Designer.png" alt="Flow Designer badge"></a>
+        <a href="../certs/SN_MC_ATF.pdf" target="_blank" rel="noopener" title="Micro-Cert: ATF"><img src="../images/SN_MC_ATF.png" alt="ATF badge"></a>
+        <a href="../certs/SN_MC_Agile.pdf" target="_blank" rel="noopener" title="Micro-Cert: Agile &amp; Test Management"><img src="../images/SN_MC_Agile.png" alt="Agile badge"></a>
+        <a href="../certs/SN_MC_CMDB_Health.pdf" target="_blank" rel="noopener" title="Micro-Cert: CMDB Health"><img src="../images/SN_MC_CMDB_Health.png" alt="CMDB Health badge"></a>
+        <a href="../certs/SN_MC_Config_CMDB.pdf" target="_blank" rel="noopener" title="Micro-Cert: Configure the CMDB"><img src="../images/SN_MC_Config_CMDB.png" alt="Configure CMDB badge"></a>
+      </div>
+      <div style="height:1px;background:var(--teal-bright);margin-top:16px;opacity:.5"></div>
+        <div class="cert-badges">
+          <a href="../certs/SN_SC_DF.pdf" target="_blank" rel="noopener" title="Suite Certification — DF"><img src="../images/SN_SC_DF.png" alt="Suite Cert DF badge"></a>
+        </div>
+    </div>
+  </aside>
+
+  <!-- ================= MAIN ================= -->
+  <main class="content">
+
+    <!-- BACK LINK -->
+    <a class="back-link" href="../index.html#projects">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M5 12l7 7M5 12l7-7"/></svg>
+      Back to Projects
+    </a>
+
+    <!-- ── HEADER ──────────────────────────────── -->
+    <!-- TEMPLATE: swap .pro/.personal and update the kind label and title/tagline -->
+    <div class="proj-meta">
+      <span class="proj-flag pro">Professional</span>
+      <span class="proj-dot">·</span>
+      <span class="proj-kind-label">ServiceNow</span>
+    </div>
+
+    <h1 class="proj-title">HR Onboarding Automation</h1>
+    <p class="proj-tagline">
+      A ServiceNow catalog request that turns a single new-hire submission into a fully provisioned employee — phone extension, fax line, copier billing code, and call-routing label — with multi-office resource pools resolved automatically.
+    </p>
+
+    <!-- ── OVERVIEW ────────────────────────────── -->
+    <div class="detail-section">
+      <div class="detail-label">Overview</div>
+      <p class="overview-text">
+        Onboarding a new hire at a multi-office organization used to mean cross-referencing several standalone trackers by hand — a phone extension sheet, a copier/print billing code list, and an org chart — to figure out what was free at that hire's specific office and role. This ServiceNow scoped application replaces that manual lookup chain with a single onboarding request: a hiring coordinator submits the new hire's office, title, and start date, and the platform resolves everything the employee needs to be productive on day one.
+      </p>
+    </div>
+
+    <!-- ── CHALLENGE + OUTCOMES ────────────────── -->
+    <div class="detail-section">
+      <div class="detail-label">The Challenge &amp; Key Outcomes</div>
+      <div class="two-col">
+        <div class="info-card">
+          <h4>The Challenge</h4>
+          <p>
+            Phone extensions, fax lines, and copier codes were tracked in separate spreadsheets per office, with no shared source of truth. Assigning resources for a new hire meant a person manually searching each tracker for something free, which was slow and prone to collisions — two people could end up with the same extension, or an onboarding request could stall for days waiting on a manual lookup.
+          </p>
+        </div>
+        <div class="info-card">
+          <h4>Key Outcomes</h4>
+          <ul>
+            <li>Single catalog form drives provisioning across phone, fax, and copier billing systems automatically</li>
+            <li>Satellite and complex office codes resolve to the correct parent office resource pool without manual mapping</li>
+            <li>Call-routing labels generate dynamically based on role and reporting manager, keeping the directory consistent</li>
+            <li>Requests fall into a clear "waiting on resources" state instead of stalling silently when nothing is free</li>
+            <li>Eliminated duplicate and colliding extension/copier code assignments</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── KEY FEATURES ───────────────────────── -->
+    <div class="detail-section">
+      <div class="detail-label">Key Features</div>
+      <div class="feature-grid">
+
+        <div class="feature-item">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          </div>
+          <div>
+            <h5>Smart Office Routing</h5>
+            <p>A lookup switch maps satellite and complex office codes back to their parent office so provisioning always pulls from the correct regional resource pool.</p>
+          </div>
+        </div>
+
+        <div class="feature-item">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L20 13l2 5v-1a2 2 0 0 1-2 2A16 16 0 0 1 4 6a2 2 0 0 1 1-2Z"/></svg>
+          </div>
+          <div>
+            <h5>Automated Phone &amp; Fax Provisioning</h5>
+            <p>A business rule queries a live extension inventory for the requester's office and role, reserves the extension, fax line, and DID, and marks it in-use — no spreadsheet required.</p>
+          </div>
+        </div>
+
+        <div class="feature-item">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          </div>
+          <div>
+            <h5>Dynamic Call-Routing Labels</h5>
+            <p>Directory labels are generated automatically from job title and reporting manager, keeping phone routing consistent without manual entry.</p>
+          </div>
+        </div>
+
+        <div class="feature-item">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+          </div>
+          <div>
+            <h5>Copier &amp; Print Code Assignment</h5>
+            <p>Pulls the next available billing code from a dedicated tracking table and links it to the new hire's name and office automatically.</p>
+          </div>
+        </div>
+
+        <div class="feature-item">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <div>
+            <h5>Conditional Logic Per Role</h5>
+            <p>Handles exceptions cleanly — roles that skip phone/copier provisioning entirely, and hires who inherit the exact line of a departing employee.</p>
+          </div>
+        </div>
+
+        <div class="feature-item">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </div>
+          <div>
+            <h5>Graceful Fallback States</h5>
+            <p>When no extension or code is available, the request moves to a clear "waiting on resources" state instead of failing silently, so nothing gets lost.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── TECH STACK ──────────────────────────── -->
+    <div class="detail-section">
+      <div class="detail-label">Tech Stack</div>
+      <div class="tags">
+        <span class="tag">ServiceNow</span>
+        <span class="tag">Catalog Item Producer</span>
+        <span class="tag">Business Rules</span>
+        <span class="tag">Custom Tables</span>
+        <span class="tag">GlideRecord</span>
+        <span class="tag">Service Catalog</span>
+        <span class="tag">JavaScript</span>
+      </div>
+    </div>
+
+    <!-- ── LINKS ───────────────────────────────── -->
+    <!-- TEMPLATE: add/remove buttons as needed. Remove this section entirely if no links. -->
+    <!-- <div class="detail-section">
+      <div class="detail-label">Links</div>
+      <div class="proj-links">
+        <a class="proj-link-btn primary" href="#" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M7 7h10v10"/></svg>
+          Live Demo
+        </a>
+        <a class="proj-link-btn secondary" href="#" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.37.5 0 5.78 0 12.29c0 5.2 3.44 9.61 8.21 11.17.6.11.82-.26.82-.58 0-.28-.01-1.04-.02-2.04-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.33-1.76-1.33-1.76-1.09-.74.08-.73.08-.73 1.2.09 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.5 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6.01 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.66.25 2.88.12 3.18.77.84 1.23 1.91 1.23 3.22 0 4.61-2.81 5.62-5.49 5.92.43.37.81 1.1.81 2.22 0 1.61-.01 2.9-.01 3.29 0 .32.22.7.83.58A12.01 12.01 0 0 0 24 12.29C24 5.78 18.63.5 12 .5z"/></svg>
+          GitHub
+        </a>
+      </div>
+    </div> -->
+
+    <div class="foot">
+      <span>©2026 Brannon Breau &amp;&amp; geekingthings.com</span>
+    </div>
+
+  </main>
+</div>
+<script>
+(function(){
+  var el = document.getElementById('resume-updated');
+  if(!el) return;
+  fetch('../resume/Brannon_Breau_Resume.pdf', {method:'HEAD', cache:'no-store'})
+    .then(function(res){
+      var lm = res.headers.get('Last-Modified');
+      if(!lm) return;
+      var text = new Date(lm).toLocaleDateString('en-US', {year:'numeric', month:'long', day:'numeric'});
+      el.textContent = 'Last updated: ' + text;
+    })
+    .catch(function(){});
+})();
+</script>
+</body>
+</html>

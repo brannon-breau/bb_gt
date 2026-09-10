@@ -1,0 +1,1643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ServiceNow Developer Reference — Brannon Breau</title>
+<link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
+<link rel="shortcut icon" href="images/favicon.ico">
+<link rel="manifest" href="images/site.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;450;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#15212c;
+    --ink-soft:#1d2c39;
+    --ink-line:#2b3c4a;
+    --paper:#f4f2ec;
+    --card:#ffffff;
+    --text:#1b2a33;
+    --muted:#5d6e78;
+    --muted-light:#8a99a2;
+    --teal:#0f7d72;
+    --teal-bright:#15b3a3;
+    --teal-faint:#e3f1ee;
+    --avoid:#b23b3b;
+    --avoid-faint:#f4e6e4;
+    --radius:14px;
+    --sidebar-w:340px;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Inter',system-ui,sans-serif;
+    background:var(--paper);
+    color:var(--text);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;text-decoration:none}
+
+  .layout{display:flex;min-height:100vh}
+
+  /* ---------- SIDEBAR ---------- */
+  .sidebar{
+    width:var(--sidebar-w);
+    flex-shrink:0;
+    background:var(--ink);
+    color:#dfe7ec;
+    position:fixed;
+    top:0;left:0;bottom:0;
+    display:flex;
+    flex-direction:column;
+    padding:44px 36px;
+    overflow-y:auto;
+  }
+
+  .name{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:600;font-size:34px;
+    line-height:1.08;letter-spacing:-.02em;
+    color:#fff;margin-bottom:10px;
+  }
+  .role{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:400;font-size:15px;
+    color:var(--teal-bright);margin-bottom:30px;
+  }
+  .rule{height:1px;background:var(--ink-line);margin:6px 0 26px}
+
+  .contact{
+    list-style:none;
+    font-family:'JetBrains Mono',monospace;
+    font-size:12.5px;
+    display:flex;flex-direction:column;gap:14px;
+    margin-bottom:34px;
+  }
+  .contact li{display:flex;align-items:flex-start;gap:11px;color:#b8c4cc}
+  .contact .ic{width:16px;flex-shrink:0;color:var(--teal-bright);margin-top:1px}
+  .contact a{transition:color .15s ease;word-break:break-all}
+  .contact a:hover{color:#fff}
+
+  .download{
+    display:flex;align-items:center;justify-content:center;gap:10px;
+    background:var(--teal-bright);color:#06241f;
+    font-weight:600;font-size:14.5px;
+    padding:14px 18px;border-radius:10px;
+    transition:transform .15s ease, background .15s ease;
+    margin-bottom:14px;
+  }
+  .download:hover{background:#1ccdb9;transform:translateY(-1px)}
+  .download svg{width:17px;height:17px}
+  .download-note{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--muted-light);text-align:center;margin-bottom:34px}
+
+  .side-nav{
+    list-style:none;display:flex;flex-direction:column;gap:3px;
+    margin-bottom:auto;
+  }
+  .side-nav a{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;letter-spacing:.04em;
+    color:#92a2ab;padding:7px 0;
+    display:flex;align-items:center;gap:12px;
+    transition:color .15s ease;
+  }
+  .side-nav a .num{color:var(--teal);font-size:11px}
+  .side-nav a:hover{color:#fff}
+  .side-nav a.active{color:#fff}
+  .side-nav a.active .num{color:var(--teal-bright)}
+
+  .side-foot{
+    margin-top:34px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;color:var(--muted-light);line-height:1.7;
+  }
+  .avail{color:var(--teal-bright)}
+  .avail::before{
+    content:"";display:inline-block;width:7px;height:7px;border-radius:50%;
+    background:var(--teal-bright);margin-right:7px;vertical-align:1px;
+    box-shadow:0 0 0 3px rgba(21,179,163,.2);
+  }
+  .cert-badges{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+  .cert-badges a{display:block;opacity:.82;transition:opacity .15s ease,transform .15s ease}
+  .cert-badges a:hover{opacity:1;transform:scale(1.06)}
+  .cert-badges img{width:56px;height:56px;object-fit:contain;border-radius:6px}
+
+  /* ---------- MAIN ---------- */
+  .content{
+    margin-left:var(--sidebar-w);
+    flex:1;padding:64px 72px 80px;max-width:1120px;
+  }
+
+  /* ---------- BACK LINK ---------- */
+  .back-link{
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;color:var(--muted);
+    margin-bottom:36px;
+    transition:color .15s ease, gap .15s ease;
+  }
+  .back-link:hover{color:var(--teal);gap:12px}
+  .back-link svg{width:14px;height:14px;flex-shrink:0}
+
+  /* ---------- PAGE HEADER ---------- */
+  .proj-title{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;font-size:38px;
+    line-height:1.1;letter-spacing:-.02em;
+    color:var(--text);margin-bottom:14px;
+  }
+  .proj-tagline{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:18px;font-weight:400;
+    line-height:1.5;color:var(--muted);
+    max-width:680px;margin-bottom:20px;
+  }
+  .ref-meta{
+    display:flex;flex-wrap:wrap;align-items:center;gap:10px 20px;
+    padding:16px 0 0;margin-bottom:44px;
+    border-top:1px solid #dcdacf;
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;color:var(--muted-light);
+  }
+  .ref-meta strong{color:var(--muted);font-weight:500}
+
+  /* ---------- REFERENCE LAYOUT ---------- */
+  .ref-layout{
+    display:grid;
+    grid-template-columns:224px minmax(0,1fr);
+    gap:44px;align-items:start;
+  }
+
+  .ref-toc{position:sticky;top:24px}
+  .ref-filter{
+    width:100%;
+    font-family:'JetBrains Mono',monospace;
+    font-size:13px;
+    background:var(--card);color:var(--text);
+    border:1px solid #e7e4d8;border-radius:8px;
+    padding:9px 12px;margin-bottom:18px;
+  }
+  .ref-filter::placeholder{color:var(--muted-light)}
+  .ref-filter:focus-visible{outline:2px solid var(--teal-bright);outline-offset:1px}
+
+  .toc-group{margin-bottom:16px}
+  .toc-group h2{
+    font-family:'JetBrains Mono',monospace;
+    font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--muted-light);margin:0 0 6px;font-weight:500;
+  }
+  .toc-group a{
+    display:flex;gap:8px;padding:4px 0;
+    color:var(--muted);font-size:13px;line-height:1.3;
+  }
+  .toc-group a:hover{color:var(--teal)}
+  .toc-empty{color:var(--muted-light);font-style:italic;font-size:.85rem;display:none}
+
+  /* ---------- CATEGORY GROUPS ---------- */
+  .cat-block{margin-bottom:38px;scroll-margin-top:20px}
+  .cat-block:last-child{margin-bottom:0}
+  .cat-heading{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--muted-light);font-weight:500;
+    margin:0 0 16px;padding-bottom:10px;
+    border-bottom:1px solid #dcdacf;
+  }
+
+  /* ---------- TOPIC CARDS ---------- */
+  .topic{
+    background:var(--card);border:1px solid #e7e4d8;
+    border-radius:var(--radius);padding:30px 32px;
+    margin-bottom:16px;scroll-margin-top:20px;
+  }
+  .topic:last-child{margin-bottom:0}
+  .topic-head{margin-bottom:22px}
+  .topic-eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--muted-light);margin-bottom:8px;
+  }
+  .topic h3{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;font-size:25px;letter-spacing:-.015em;
+    color:var(--text);margin:0 0 4px;
+  }
+  .topic .tagline{color:var(--muted);margin:0;font-size:14.5px}
+
+  .ref-section{margin-top:24px}
+  .ref-label{
+    display:flex;align-items:center;gap:10px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--teal);margin-bottom:12px;
+  }
+  .ref-label .n{
+    font-size:10px;color:var(--teal);background:var(--teal-faint);
+    border-radius:5px;padding:2px 6px;font-weight:600;
+  }
+  .ref-label::after{content:"";flex:1;height:1px;background:#dcdacf}
+
+  .defs{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
+    gap:4px 26px;
+  }
+  .def{padding:7px 0;border-top:1px solid #ece9de}
+  .def:first-child,.defs.two-col .col>.def:first-child{border-top:none}
+  .def dt{
+    font-family:'JetBrains Mono',monospace;
+    font-size:.84rem;font-weight:500;color:var(--teal);
+    margin-bottom:2px;word-break:break-word;
+  }
+  .def dd{margin:0;font-size:.88rem;color:var(--muted)}
+
+  .defs.two-col{grid-template-columns:1fr 1fr;gap:26px}
+  .defs.two-col .col>.col-head{
+    font-family:'JetBrains Mono',monospace;
+    font-size:.8rem;font-weight:600;color:var(--text);
+    padding-bottom:8px;border-bottom:2px solid var(--teal-bright);margin-bottom:4px;
+  }
+
+  /* ---------- DO / AVOID ---------- */
+  .guidance{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:26px}
+  .panel{border:1px solid #e7e4d8;border-radius:10px;padding:16px 18px;background:var(--paper)}
+  .panel h4{
+    margin:0 0 10px;font-size:.8rem;
+    font-family:'JetBrains Mono',monospace;letter-spacing:.06em;text-transform:uppercase;
+    display:flex;align-items:center;gap:8px;
+  }
+  .panel.do h4{color:var(--teal)}
+  .panel.avoid h4{color:var(--avoid)}
+  .panel h4 .mark{
+    width:16px;height:16px;border-radius:5px;
+    display:grid;place-items:center;font-size:11px;font-weight:700;color:#fff;
+  }
+  .panel.do .mark{background:var(--teal-bright)}
+  .panel.avoid .mark{background:var(--avoid)}
+  .panel ul{margin:0;padding:0;list-style:none}
+  .panel li{
+    font-size:.85rem;color:var(--muted);
+    padding:5px 0 5px 16px;position:relative;line-height:1.45;
+  }
+  .panel li::before{
+    content:"";position:absolute;left:0;top:.68em;
+    width:6px;height:6px;border-radius:2px;
+  }
+  .panel.do li::before{background:var(--teal-bright)}
+  .panel.avoid li::before{background:var(--avoid)}
+
+  /* ---------- CODE ---------- */
+  figure.ref-code{
+    margin:26px 0 0;background:var(--ink);
+    border-radius:10px;overflow:hidden;border:1px solid var(--ink-line);
+  }
+  figure.ref-code figcaption{
+    display:flex;align-items:center;gap:8px;padding:9px 14px;
+    border-bottom:1px solid rgba(255,255,255,.07);
+    font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#8a99a2;
+  }
+  figure.ref-code .dots{display:flex;gap:5px}
+  figure.ref-code .dots i{width:9px;height:9px;border-radius:50%;display:block;background:var(--ink-line)}
+  figure.ref-code pre{
+    margin:0;padding:15px 16px 17px;overflow-x:auto;
+    font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:1.62;
+    color:#dfe7ec;tab-size:2;
+  }
+  .tok-k{color:#7cc7ff}
+  .tok-s{color:var(--teal-bright)}
+  .tok-c{color:#7386a0;font-style:italic}
+
+  .is-hidden{display:none!important}
+
+  /* footer */
+  .foot{
+    margin-top:64px;padding-top:24px;border-top:1px solid #dcdacf;
+    font-family:'JetBrains Mono',monospace;
+    font-size:11.5px;color:var(--muted-light);
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;
+  }
+
+  /* ---------- RESPONSIVE ---------- */
+  @media(max-width:900px){
+    .layout{flex-direction:column}
+    .sidebar{position:static;width:100%;padding:36px 28px}
+    .side-nav{display:none}
+    .side-foot{margin-top:30px}
+    .content{margin-left:0;padding:44px 28px 60px;max-width:100%}
+    .ref-layout{grid-template-columns:1fr;gap:26px}
+    .ref-toc{position:static}
+    .ref-toc nav{columns:2;column-gap:28px}
+    .toc-group{break-inside:avoid}
+    .guidance,.defs.two-col{grid-template-columns:1fr}
+    .topic{padding:24px 20px}
+  }
+  @media(max-width:620px){
+    .proj-title{font-size:30px}
+    .content{padding:36px 22px 50px}
+    .ref-toc nav{columns:1}
+  }
+  @media(prefers-reduced-motion:reduce){
+    *{transition:none!important;scroll-behavior:auto}
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+
+  <!-- ================= SIDEBAR ================= -->
+  <aside class="sidebar">
+    <h1 class="name">Brannon<br>Breau</h1>
+    <div class="role">ServiceNow Platform Developer</div>
+    <div class="rule"></div>
+
+    <ul class="contact">
+      <li>
+        <span class="ic">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+        </span>
+        <a href="mailto:brannon.breau@gmail.com">brannon.breau@gmail.com</a>
+      </li>
+      <li>
+        <span class="ic">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L20 13l2 5v-1a2 2 0 0 1-2 2A16 16 0 0 1 4 6a2 2 0 0 1 1-2Z"/></svg>
+        </span>
+        <a href="tel:+15618090683">(561) 809-0683</a>
+      </li>
+      <li>
+        <span class="ic">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 10v7M7 7v.01M11 17v-4a2 2 0 0 1 4 0v4M11 17v-7"/></svg>
+        </span>
+        <a href="https://linkedin.com/in/bbreau" target="_blank" rel="noopener">linkedin</a>
+      </li>
+      <li>
+        <span class="ic">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.37.5 0 5.78 0 12.29c0 5.2 3.44 9.61 8.21 11.17.6.11.82-.26.82-.58 0-.28-.01-1.04-.02-2.04-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.33-1.76-1.33-1.76-1.09-.74.08-.73.08-.73 1.2.09 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.5 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6.01 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.66.25 2.88.12 3.18.77.84 1.23 1.91 1.23 3.22 0 4.61-2.81 5.62-5.49 5.92.43.37.81 1.1.81 2.22 0 1.61-.01 2.9-.01 3.29 0 .32.22.7.83.58A12.01 12.01 0 0 0 24 12.29C24 5.78 18.63.5 12 .5z"/></svg>
+        </span>
+        <a href="https://github.com/brannon-breau" target="_blank" rel="noopener">github</a>
+      </li>
+      <li>
+        <span class="ic">
+          <svg viewBox="0 0 48 48" aria-hidden="true"><path fill="currentColor" d="m42,37c0,2.76-2.24,5-5,5H11c-2.76,0-5-2.24-5-5V11c0-2.76,2.24-5,5-5h26c2.76,0,5,2.24,5,5v26Z"/><path fill="var(--ink)" d="m33.77,27.04c-.71-.5-1.68-.32-2.18.39-2.14,2.96-5.22,5.57-9.58,5.57s-4.62-7.88-2-13c1.61-3.14,3.87-5.73,5.84-5.72,1.39,0,2.18,1.26,1.8,2.6-.46,1.63-.51,2.72-.51,2.81-.04.96.71,1.77,1.68,1.8.02,0,.04.01.07.01.93,0,1.7-.74,1.74-1.68,0-.03.18-3.31,2.78-6.77.63-.84.39-2.07-.57-2.59-.77-.42-1.75-.14-2.27.56-.15.2-.29.39-.42.59-.14.2-.4.27-.62.17-7.7-3.47-12.07,3.86-13.51,7.23-3,7-3,18,5.62,18,7.22,0,10.63-4.75,12.6-7.79.46-.71.27-1.66-.42-2.14-.01,0-.02-.02-.03-.02Z"/></svg>
+        </span>
+        <a href="https://www.credly.com/users/brannon-breau" target="_blank" rel="noopener">credly</a>
+      </li>
+    </ul>
+
+    <a class="download" href="resume/Brannon_Breau_Resume.pdf"  target="_blank" rel="noopener" download>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14"/></svg>
+      Download Resume (PDF)
+    </a>
+    <div class="download-note" id="resume-updated">Last updated: July 16, 2026</div>
+
+    <nav>
+      <ul class="side-nav">
+        <li><a href="index.html#summary"><span class="num">01</span> Summary</a></li>
+        <li><a href="index.html#skills"><span class="num">02</span> Technical Skills</a></li>
+        <li><a href="index.html#experience"><span class="num">03</span> Experience</a></li>
+        <li><a href="index.html#education"><span class="num">04</span> Education</a></li>
+        <li><a href="index.html#certifications"><span class="num">05</span> Certifications</a></li>
+        <li><a href="index.html#projects"><span class="num">06</span> Notable Projects</a></li>
+        <li><a href="sn-reference.html" class="active"><span class="num">07</span> ServiceNow Dev Reference</a></li>
+      </ul>
+    </nav>
+
+    <div class="side-foot">
+      <div class="avail">Open to opportunities</div>
+      <div style="margin-top:8px">10+ yrs IT · 7+ yrs ServiceNow</div>
+      <div style="height:1px;background:var(--teal-bright);margin-top:16px;opacity:.5"></div>
+      <div class="cert-badges">
+        <a href="certs/SN_CSA.pdf" target="_blank" rel="noopener" title="Certified System Administrator"><img src="images/SN_CSA.png" alt="CSA badge"></a>
+        <a href="certs/SN_CIS_ITSM.pdf" target="_blank" rel="noopener" title="CIS — ITSM"><img src="images/SN_CIS_ITSM.png" alt="CIS ITSM badge"></a>
+        <a href="certs/SN_CIS_CSM.pdf" target="_blank" rel="noopener" title="CIS — CSM"><img src="images/SN_CIS_CSM.png" alt="CIS CSM badge"></a>
+        <a href="certs/SN_CIS_DF.pdf" target="_blank" rel="noopener" title="CIS — DF"><img src="images/SN_CIS_DF.png" alt="CIS DF badge"></a>
+        </div>
+        <div style="height:1px;background:var(--teal-bright);margin-top:16px;opacity:.5"></div>
+        <div class="cert-badges">
+        <a href="certs/SN_MC_Flow_Designer.pdf" target="_blank" rel="noopener" title="Micro-Cert: Flow Designer"><img src="images/SN_MC_Flow_Designer.png" alt="Flow Designer badge"></a>
+        <a href="certs/SN_MC_ATF.pdf" target="_blank" rel="noopener" title="Micro-Cert: ATF"><img src="images/SN_MC_ATF.png" alt="ATF badge"></a>
+        <a href="certs/SN_MC_Agile.pdf" target="_blank" rel="noopener" title="Micro-Cert: Agile &amp; Test Management"><img src="images/SN_MC_Agile.png" alt="Agile badge"></a>
+        <a href="certs/SN_MC_CMDB_Health.pdf" target="_blank" rel="noopener" title="Micro-Cert: CMDB Health"><img src="images/SN_MC_CMDB_Health.png" alt="CMDB Health badge"></a>
+        <a href="certs/SN_MC_Config_CMDB.pdf" target="_blank" rel="noopener" title="Micro-Cert: Configure the CMDB"><img src="images/SN_MC_Config_CMDB.png" alt="Configure CMDB badge"></a>
+      </div>
+      <div style="height:1px;background:var(--teal-bright);margin-top:16px;opacity:.5"></div>
+        <div class="cert-badges">
+          <a href="certs/SN_SC_DF.pdf" target="_blank" rel="noopener" title="Suite Certification — DF"><img src="images/SN_SC_DF.png" alt="Suite Cert DF badge"></a>
+        </div>
+    </div>
+  </aside>
+
+  <!-- ================= MAIN ================= -->
+  <main class="content">
+
+    <!-- BACK LINK -->
+    <a class="back-link" href="index.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M5 12l7 7M5 12l7-7"/></svg>
+      Back to Resume
+    </a>
+
+    <div class="proj-title">ServiceNow Developer Reference</div>
+    <p class="proj-tagline">Twenty-two platform concepts — the core scripting APIs, the configuration
+    layers, and the do / avoid rules that keep them out of trouble. Built for quick lookup while building.</p>
+    <div class="ref-meta">
+      <span><strong>Source:</strong> &ldquo;ServiceNow Dev Series&rdquo; cheat sheets by Arpan Shah</span>
+      <span><strong>Topics:</strong> 22, grouped by area</span>
+    </div>
+
+    <div class="ref-layout">
+      <aside class="ref-toc">
+        <input class="ref-filter" id="filter" type="search" placeholder="Filter topics…" aria-label="Filter topics">
+        <nav id="toc"></nav>
+        <p class="toc-empty" id="tocEmpty">No topics match.</p>
+      </aside>
+      <div id="content"></div>
+    </div>
+
+    <div class="foot">
+      <span>©2026 Brannon Breau &amp;&amp; geekingthings.com</span>
+    </div>
+
+  </main>
+</div>
+
+<script>
+const TOPICS = [
+  {
+    day: "01", cat: "Querying Data", slug: "gliderecord",
+    title: "GlideRecord",
+    tagline: "The core API for querying, reading & writing ServiceNow table data.",
+    sections: [
+      { n: "01", label: "Query Methods", items: [
+        ["gr.addQuery('field', val)", "Add an AND condition"],
+        ["gr.addQuery('field','>',val)", "Condition with an operator"],
+        ["gr.addOrCondition(...)", "Chain an OR onto the last query"],
+        ["gr.addEncodedQuery(str)", "Apply a raw encoded query string"],
+        ["gr.orderBy('field')", "Sort ascending (orderByDesc = desc)"],
+        ["gr.setLimit(n)", "Cap the number of rows returned"],
+        ["gr.query()", "Execute the query against the table"],
+      ]},
+      { n: "02", label: "Navigate & Read", items: [
+        ["gr.next()", "Move the cursor to the next record"],
+        ["gr.hasNext()", "True if more records remain"],
+        ["gr.getRowCount()", "Total rows matched (use sparingly)"],
+        ["gr.isValidRecord()", "Check a record was actually found"],
+        ["gr.getValue('field')", "Raw backend value of a field"],
+        ["gr.getDisplayValue('f')", "Human-readable display value"],
+        ["gr._next()", "next() variant used in Script Includes"],
+      ]},
+      { n: "03", label: "Create · Update · Delete", items: [
+        ["gr.get('sys_id')", "Fetch a single record by sys_id"],
+        ["gr.setValue('f', v)", "Set a field before insert/update"],
+        ["gr.insert()", "Create the record, returns new sys_id"],
+        ["gr.deleteRecord()", "Delete the current record"],
+        ["gr.initialize()", "Prep an in-memory new record"],
+        ["gr.update()", "Save changes to an existing record"],
+        ["gr.updateMultiple()", "Bulk-update every matched row"],
+        ["gr.deleteMultiple()", "Bulk-delete every matched row"],
+      ]},
+    ],
+    doList: [
+      "Add all addQuery() calls before query()",
+      "Use setLimit() on very large tables",
+      "Use GlideAggregate for pure counts",
+      "Guard while loops with hasNext()",
+    ],
+    avoidList: [
+      "Calling .query() inside a loop",
+      "Dot-walking fields inside a query loop",
+      "Skipping isValidRecord() after get()",
+      "GlideRecord loops just to count rows",
+    ],
+    code: { file: "example.js", body:
+`var gr = new GlideRecord('incident');
+gr.addQuery('active', true);
+gr.addQuery('priority', 1);
+gr.query();
+while (gr.next()) {
+  gr.setValue('state', 2);
+  gr.update();
+}` },
+  },
+
+  {
+    day: "02", cat: "Querying Data", slug: "glideaggregate",
+    title: "GlideAggregate",
+    tagline: "Fast counts, sums & averages without loading full records.",
+    sections: [
+      { n: "01", label: "Build the Query", items: [
+        ["new GlideAggregate('t')", "Create an aggregate query object"],
+        ["ga.addAggregate('COUNT')", "Count matching rows"],
+        ["ga.addAggregate('SUM','f')", "Sum a numeric field"],
+        ["ga.addAggregate('AVG','f')", "Average a numeric field"],
+        ["ga.addQuery('f', val)", "Filter rows before aggregating"],
+        ["ga.groupBy('field')", "Group results by a field"],
+        ["ga.query()", "Execute the aggregate query"],
+      ]},
+      { n: "02", label: "Read the Results", items: [
+        ["ga.next()", "Move to the next grouped row"],
+        ["ga.getAggregate('COUNT')", "Get the aggregate value"],
+        ["ga.getAggregate('SUM','f')", "Get the sum for the current row"],
+        ["ga.getValue('field')", "Get the groupBy field's value"],
+        ["ga.orderByAggregate('COUNT')", "Sort rows by aggregate value"],
+        ["ga.setGroup(true)", "Enable/disable grouping (default true)"],
+      ]},
+      { n: "03", label: "GlideAggregate vs GlideRecord", compare: ["Reach for GlideAggregate", "Reach for GlideRecord"], items: [
+        ["Reporting", "Building dashboards or report widgets", "l"],
+        ["Grouped totals", "Need totals broken out by category or group", "l"],
+        ["Large tables", "Performance matters, avoid loading full rows", "l"],
+        ["Simple math", "Just need a count, sum, avg, min, or max", "l"],
+        ["Field values", "Need actual data from each matched record", "r"],
+        ["Row logic", "Need per-record business logic while looping", "r"],
+        ["Updates / Deletes", "Plan to modify or remove matched records", "r"],
+        ["Small result sets", "Working with a modest number of rows", "r"],
+      ]},
+    ],
+    doList: [
+      "Combine addQuery() with addAggregate() to filter first",
+      "Call query() before next(), same as GlideRecord",
+      "Use groupBy() for per-category breakdowns",
+      "Use orderByAggregate() when order actually matters",
+    ],
+    avoidList: [
+      "Looping GlideRecord just to count or sum rows",
+      "Expecting field values other than the grouped field",
+      "Mixing up the function name passed to getAggregate()",
+      "Using it as a replacement for detailed row-level logic",
+    ],
+    code: { file: "example.js", body:
+`var ga = new GlideAggregate('incident');
+ga.addAggregate('COUNT');
+ga.addQuery('active', true);
+ga.groupBy('priority');
+ga.query();
+while (ga.next()) {
+  gs.info(ga.getValue('priority') + ': ' + ga.getAggregate('COUNT'));
+}` },
+  },
+
+  {
+    day: "03", cat: "Server & Client", slug: "server-client-scoped",
+    title: "Server vs Client vs Scoped",
+    tagline: "Picking the right API for the context you're scripting in.",
+    sections: [
+      { n: "01", label: "GlideRecord (Server)", items: [
+        ["Context", "Business Rules, Script Includes, Background Scripts"],
+        ["Access", "Full table & field access, respects ACLs"],
+        ["Strength", "Complex queries, dot-walking, full CRUD"],
+        ["Watch for", "Never expose this logic directly to the client"],
+      ]},
+      { n: "02", label: "GlideAjax (Client → Server)", items: [
+        ["Context", "Client Script calling a Script Include"],
+        ["Setup", "new GlideAjax('MyScriptInclude')"],
+        ["Call", "addParam(...).getXMLAnswer(callback)"],
+        ["Watch for", "Script Include must extend AbstractAjaxProcessor"],
+      ]},
+      { n: "03", label: "Scoped Applications", items: [
+        ["Same API", "GlideRecord works the same inside a scoped app"],
+        ["Cross-scope", "Touching another scope's table needs explicit access"],
+        ["GlideRecordSecure", "Safer variant that enforces ACLs, use where required"],
+        ["Application Access", "Setting that controls what other scopes can see"],
+        ["Global scope", "Can touch any table by default, less isolation"],
+        ["Scoped apps", "Sandboxed by design, safer for packaging & sharing"],
+        ["Cross-scope APIs", "Standard, explicit way to expose logic between scopes"],
+        ["New custom apps", "Scoped is the recommended default going forward"],
+      ]},
+    ],
+    doList: [
+      "Keep GlideRecord logic on the server, always",
+      "Use GlideAjax whenever the client needs server data",
+      "Mark a Script Include client callable only when needed",
+      "Design scoped apps with explicit cross-scope APIs",
+    ],
+    avoidList: [
+      "Never instantiate GlideRecord directly in a client script",
+      "Don't put sensitive logic in a client-callable method",
+      "Don't assume scoped apps see every global table",
+      "Don't skip input validation inside a GlideAjax method",
+    ],
+    code: { file: "client_script.js", body:
+`// Client Script
+var ga = new GlideAjax('IncidentUtils');
+ga.addParam('sysparm_name', 'getCount');
+ga.getXMLAnswer(function(count) {
+  g_form.addInfoMessage('Open: ' + count);
+});` },
+  },
+
+  {
+    day: "04", cat: "Business Logic", slug: "business-rules",
+    title: "Business Rules",
+    tagline: "When each type fires, and what current vs previous means.",
+    sections: [
+      { n: "01", label: "Run Types", items: [
+        ["before", "Runs before the DB write, can change values"],
+        ["after", "Runs after the DB write, record is committed"],
+        ["async", "Runs in the background, doesn't block the save"],
+        ["display", "Runs before form render, sends data to the client"],
+      ]},
+      { n: "02", label: "Timing & Order", items: [
+        ["Order field", "Lower numbers run first (default 100)"],
+        ["Same table & type", "Executes in ascending order-value sequence"],
+        ["before → after → async", "Execution sequence for a single save"],
+        ["display", "Runs earlier, on GlideRecord read for the form"],
+      ]},
+      { n: "03", label: "current vs previous", compare: ["current", "previous"], items: [
+        ["current", "The GlideRecord being inserted or updated now", "l"],
+        ["current.field.changes()", "True if that field's value changed", "l"],
+        ["current.isNewRecord()", "True if this is a brand new record", "l"],
+        ["previous", "Snapshot of the record before this update", "r"],
+        ["previous.field", "Old value, only valid in after/async on update", "r"],
+        ["current.operation()", "Returns 'insert', 'update', or 'delete'", "r"],
+      ]},
+    ],
+    doList: [
+      "Use before to validate or auto-set field values",
+      "Use after for actions on related records",
+      "Use async for slow, non-blocking work like notifications",
+      "Check .changes() before reacting to a field update",
+    ],
+    avoidList: [
+      "Don't call current.update() inside a before rule",
+      "Don't rely on previous in a before rule, it isn't set yet",
+      "Don't put heavy logic in synchronous before/after rules",
+      "Don't stack rules without checking their execution order",
+    ],
+    code: { file: "business_rule.js", body:
+`(function executeRule(current, previous) {
+  if (current.priority.changes() && current.priority == 1) {
+    current.short_description = 'P1: ' + current.short_description;
+  }
+})(current, previous);` },
+  },
+
+  {
+    day: "05", cat: "Business Logic", slug: "client-scripts",
+    title: "Client Scripts",
+    tagline: "Form-side scripting: types, g_form, and common gotchas.",
+    sections: [
+      { n: "01", label: "Script Types", items: [
+        ["onLoad", "Runs once when the form finishes loading"],
+        ["onChange", "Runs when a specific field's value changes"],
+        ["onSubmit", "Runs before the form submits, can block it"],
+        ["onCellEdit", "Runs on list edit, before the cell saves"],
+      ]},
+      { n: "02", label: "g_form Essentials", items: [
+        ["g_form.getValue('f')", "Read a field's current value"],
+        ["g_form.setValue('f', v)", "Set a field's value"],
+        ["g_form.setMandatory('f', b)", "Toggle whether a field is required"],
+        ["g_form.setVisible('f', b)", "Show or hide a field"],
+        ["g_form.addInfoMessage(m)", "Show a form-level info message"],
+      ]},
+      { n: "03", label: "Common Patterns", items: [
+        ["Show / hide a field", "onChange → g_form.setVisible()"],
+        ["Validate before save", "onSubmit → return false to block it"],
+        ["Default a value", "onLoad → check g_form.isNewRecord()"],
+        ["Call server logic", "Use GlideAjax from an onChange script"],
+        ["React to a related field", "Dot-walked onChange field, use sparingly"],
+        ["Warn without blocking", "addInfoMessage() / addErrorMessage()"],
+      ]},
+    ],
+    doList: [
+      "Guard onChange with isLoading to skip the initial fire",
+      "Return false explicitly to actually block onSubmit",
+      "Use GlideAjax for anything that needs server data",
+      "Keep onLoad scripts fast, they delay form render",
+    ],
+    avoidList: [
+      "Don't query the database directly from a client script",
+      "Don't skip the isLoading / unchanged-value check",
+      "Don't chain too many onChange scripts on one field",
+      "Don't rely on client scripts alone for real security",
+    ],
+    code: { file: "client_script.js", body:
+`function onChange(control, oldValue, newValue, isLoading) {
+  if (isLoading || newValue === '') return;
+  if (newValue === '1') {
+    g_form.setMandatory('close_notes', true);
+  }
+}` },
+  },
+
+  {
+    day: "06", cat: "Server & Client", slug: "glidesystem",
+    title: "GlideSystem (gs)",
+    tagline: "The server-side utility belt used in almost every script.",
+    sections: [
+      { n: "01", label: "Logging & Messages", items: [
+        ["gs.info(msg)", "Write to the system log (info level)"],
+        ["gs.warn(msg)", "Write a warning to the system log"],
+        ["gs.error(msg)", "Write an error to the system log"],
+        ["gs.addInfoMessage(msg)", "Show a blue info banner on the form"],
+        ["gs.addErrorMessage(msg)", "Show a red error banner on the form"],
+      ]},
+      { n: "02", label: "User & Session", items: [
+        ["gs.getUserID()", "sys_id of the currently logged-in user"],
+        ["gs.getUserName()", "User ID (username) of the current user"],
+        ["gs.getUser().getEmail()", "Current user's email address"],
+        ["gs.hasRole('admin')", "Check if the user has a given role"],
+        ["gs.getSession()...", "Access session details like timezone"],
+      ]},
+      { n: "03", label: "Dates & Flow Control", items: [
+        ["gs.nowDateTime()", "Current date/time in system format"],
+        ["gs.daysAgo(n)", "Date string n days before today"],
+        ["gs.dateGenerate(d, t)", "Build a GlideDateTime from strings"],
+        ["gs.eventQueue(...)", "Fire a custom event to decouple logic"],
+        ["gs.include('Lib')", "Load an additional server-side library"],
+        ["gs.getProperty('key')", "Read a system property's value"],
+      ]},
+    ],
+    doList: [
+      "Use gs.info/warn/error instead of ad-hoc logging",
+      "Check gs.hasRole() before sensitive server actions",
+      "Fire events with gs.eventQueue() to decouple logic",
+      "Read config through gs.getProperty(), not hard-coded values",
+    ],
+    avoidList: [
+      "Don't overuse addErrorMessage() for routine information",
+      "Don't assume gs.getUser() is set in every script context",
+      "Don't hard-code dates instead of nowDateTime() / daysAgo()",
+      "Don't log sensitive data like passwords or tokens",
+    ],
+    code: { file: "business_rule.js", body:
+`if (!gs.hasRole('itil')) {
+  gs.addErrorMessage('You do not have permission to close this record.');
+  current.setAbortAction(true);
+}
+gs.eventQueue('incident.closed', current, gs.getUserID());` },
+  },
+
+  {
+    day: "07", cat: "Server & Client", slug: "script-includes",
+    title: "Script Includes",
+    tagline: "Reusable server logic, called safely from the client.",
+    sections: [
+      { n: "01", label: "Defining a Script Include", items: [
+        ["var MyClass = Class.create();", "Standard class declaration"],
+        ["MyClass.prototype = {...}", "Define methods on the prototype"],
+        ["initialize: function() {}", "Constructor, runs on new MyClass()"],
+        ["type: 'MyClass'", "Required name, must match the record"],
+      ]},
+      { n: "02", label: "Client Callable Setup", items: [
+        ["Client callable = true", "Checkbox required for GlideAjax use"],
+        ["extend AbstractAjaxProcessor", "Base class for callable includes"],
+        ["getParameter('sysparm_x')", "Read a parameter sent from the client"],
+        ["return value", "String returned to the getXMLAnswer callback"],
+      ]},
+      { n: "03", label: "Calling a Script Include", compare: ["From the client (Ajax)", "From server code (direct)"], items: [
+        ["new GlideAjax('Class')", "Reference the Script Include by name", "l"],
+        ["addParam('sysparm_name','m')", "Choose which method to call", "l"],
+        ["getXMLAnswer(callback)", "Async, non-blocking response", "l"],
+        ["new MyClass()", "Instantiate directly, no Ajax needed", "r"],
+        ["myObj.myMethod(args)", "Call methods synchronously", "r"],
+        ["Same-scope server code", "Works in Business Rules & other includes", "r"],
+      ]},
+    ],
+    doList: [
+      "Keep client-callable methods small and single-purpose",
+      "Validate and sanitize every getParameter() input",
+      "Reuse the same Script Include from client and server",
+      "Name methods clearly: getX, isX, checkX",
+    ],
+    avoidList: [
+      "Don't mark every Script Include client callable by default",
+      "Don't return sensitive data to the client unnecessarily",
+      "Don't do heavy processing inside a synchronous Ajax call",
+      "Don't forget getXMLAnswer() is asynchronous, order isn't guaranteed",
+    ],
+    code: { file: "IncidentUtils.js", body:
+`var IncidentUtils = Class.create();
+IncidentUtils.prototype = Object.extendsObject(AbstractAjaxProcessor, {
+  getOpenCount: function() {
+    var ga = new GlideAggregate('incident');
+    ga.addAggregate('COUNT');
+    ga.addQuery('active', true);
+    ga.query();
+    return ga.next() ? ga.getAggregate('COUNT') : 0;
+  },
+  type: 'IncidentUtils'
+});` },
+  },
+
+  {
+    day: "08", cat: "Security", slug: "acls",
+    title: "ACLs Explained",
+    tagline: "How ServiceNow decides who can read, write, create & delete.",
+    sections: [
+      { n: "01", label: "ACL Types", items: [
+        ["read", "Controls whether a record/field can be viewed"],
+        ["write", "Controls whether a field can be edited"],
+        ["create", "Controls whether a new record can be inserted"],
+        ["delete", "Controls whether a record can be removed"],
+      ]},
+      { n: "02", label: "Evaluation Order", items: [
+        ["1 · Table-level ACL", "Broadest rule, checked first"],
+        ["2 · Field-level ACL", "More specific, can add to the table rule"],
+        ["3 · Role requirement", "Must satisfy at least one listed role"],
+        ["4 · Script condition", "Must also return true, if one is present"],
+      ]},
+      { n: "03", label: "Conditions", items: [
+        ["Any listed role", "User needs to match at least one role"],
+        ["No roles listed", "ACL is open to all authenticated users"],
+        ["Multiple ACLs", "Every applicable ACL must independently pass"],
+        ["answer = true / false", "Script must explicitly set this variable"],
+        ["gs.hasRole('x')", "Common check used inside the condition script"],
+        ["current.field", "Record data is available inside the script"],
+      ]},
+    ],
+    doList: [
+      "Layer table + field ACLs for defense in depth",
+      "Use script conditions for dynamic, data-based rules",
+      "Test with Impersonate to verify real user access",
+      "Keep ACL scripts short and side-effect free",
+    ],
+    avoidList: [
+      "Don't rely on UI hiding alone, ACLs are the real security",
+      "Don't stack conflicting ACLs without testing the order",
+      "Don't put heavy logic in an ACL script, it runs very often",
+      "Don't forget ACLs apply to APIs too, not just forms",
+    ],
+    code: { file: "acl_script.js", body:
+`// Field ACL script (write access)
+answer = false;
+if (gs.hasRole('itil') || current.assigned_to == gs.getUserID()) {
+  answer = true;
+}` },
+  },
+
+  {
+    day: "09", cat: "Business Logic", slug: "ui-policies",
+    title: "UI Policies",
+    tagline: "Declarative field control vs full JavaScript power.",
+    sections: [
+      { n: "01", label: "UI Policies", items: [
+        ["No code required", "Set mandatory / visible / read-only via conditions"],
+        ["Runs on load & change", "Automatically re-evaluates as fields change"],
+        ["Reverse if false", "Auto-undoes the action when the condition stops matching"],
+        ["UI Policy Actions", "Attach one or more field actions per policy"],
+      ]},
+      { n: "02", label: "Client Scripts (recap)", items: [
+        ["Full JavaScript control", "Use when logic is too complex for a policy"],
+        ["onLoad / onChange / onSubmit", "Same script types covered on Day 05"],
+        ["Can call GlideAjax", "Reach the server for data-driven logic"],
+        ["More power, more risk", "Easier to introduce bugs or slow the form"],
+      ]},
+      { n: "03", label: "When to Use Which", compare: ["UI Policy", "Client Script"], items: [
+        ["Simple field state", "Just toggling visible / mandatory / read-only", "l"],
+        ["Condition-based", "Driven by other field values on the form", "l"],
+        ["No server call needed", "Everything evaluates client-side", "l"],
+        ["Custom logic", "Calculations, loops, or complex conditions", "r"],
+        ["Need server data", "Must call GlideAjax or check related records", "r"],
+        ["Cross-field validation", "Complex onSubmit validation logic", "r"],
+      ]},
+    ],
+    doList: [
+      "Default to a UI Policy for simple show/hide/mandatory logic",
+      "Use 'Reverse if false' instead of writing undo logic yourself",
+      "Order UI Policies carefully when several touch the same field",
+      "Combine both: policy for state, client script for real logic",
+    ],
+    avoidList: [
+      "Don't write a client script just to hide one field",
+      "Don't stack conflicting UI Policies without checking order",
+      "Don't forget UI Policies also apply on list-edit forms",
+      "Don't assume UI Policies run on the server, they don't",
+    ],
+    code: { file: "ui_policy_condition.js", body:
+`// UI Policy - Advanced condition script
+function onCondition() {
+  return g_form.getValue('state') == '1';
+}` },
+  },
+
+  {
+    day: "10", cat: "Business Logic", slug: "ui-actions",
+    title: "UI Actions",
+    tagline: "Buttons, links, and menu items that trigger logic.",
+    sections: [
+      { n: "01", label: "Where They Show Up", items: [
+        ["Form button", "Shows on the record form, e.g. top of form"],
+        ["Related link", "Shows in the related links section"],
+        ["List banner button", "Shows above a list of records"],
+        ["Context menu item", "Shows in the right-click menu"],
+      ]},
+      { n: "02", label: "Key Settings", items: [
+        ["Client", "Run in browser first, needs a client-side script"],
+        ["Onclick", "Function name called on click, if Client = true"],
+        ["Condition", "Script controlling when the action is visible"],
+        ["Form / list action", "Which context the action is allowed to appear in"],
+      ]},
+      { n: "03", label: "Client vs Server UI Action", compare: ["Client = true", "Client = false"], items: [
+        ["Runs JS in browser", "Can use g_form & dialogs", "l"],
+        ["gsftSubmit()", "Passes control to the server-side script after", "l"],
+        ["Good for", "Confirmations & client-side validation before submit", "l"],
+        ["Runs entirely server-side", "No browser step", "r"],
+        ["Direct GlideRecord access", "Works with current record straight away", "r"],
+        ["Good for", "Straightforward server actions & bulk operations", "r"],
+      ]},
+    ],
+    doList: [
+      "Use a confirm() dialog before destructive actions",
+      "Keep the condition script fast, it runs on every form load",
+      "Use gsftSubmit() to pass client-validated data to the server",
+      "Name onclick functions clearly and uniquely",
+    ],
+    avoidList: [
+      "Don't mix client and server logic in one confusing script",
+      "Don't forget to set the correct form action / list action",
+      "Don't run heavy queries inside the condition script",
+      "Don't duplicate logic a Business Rule already handles",
+    ],
+    code: { file: "ui_action.js", body:
+`function confirmClose() {
+  if (confirm('Close this incident?')) {
+    gsftSubmit(null, g_form.getFormElement(), 'close_incident');
+  }
+}
+if (typeof window == 'undefined') {
+  current.state = 7;
+  current.update();
+  action.setRedirectURL(current);
+}` },
+  },
+
+  {
+    day: "11", cat: "Security", slug: "data-policies",
+    title: "Data Policies",
+    tagline: "Two different layers of control that often get confused.",
+    sections: [
+      { n: "01", label: "Data Policies", items: [
+        ["Enforce mandatory / read-only", "Applies everywhere: UI, import, API"],
+        ["No role logic", "Doesn't control visibility, just field rules"],
+        ["Mirrors UI Policy", "Same concept, but enforced on the server"],
+        ["Runs on every data path", "Web form, SOAP/REST, and import sets"],
+      ]},
+      { n: "02", label: "ACLs (recap)", items: [
+        ["Controls read/write/create/delete", "True access control by role or script"],
+        ["Table & field level", "Layered evaluation, most specific wins"],
+        ["Security boundary", "This is the real security enforcement layer"],
+        ["Doesn't set mandatory", "ACLs don't force a field to be required"],
+      ]},
+      { n: "03", label: "Choosing the Right Tool", compare: ["Use a Data Policy", "Use an ACL"], items: [
+        ["Field must always be required", "Regardless of entry point: form, API, import", "l"],
+        ["No user / role distinction needed", "Same rule applies to everyone", "l"],
+        ["Backing up a UI Policy", "Enforce server-side what a UI Policy does client-side", "l"],
+        ["Access depends on role", "Different users need different permissions", "r"],
+        ["Security is the goal", "Preventing unauthorized read/write/delete", "r"],
+        ["Condition depends on data", "Script needs to inspect the record itself", "r"],
+      ]},
+    ],
+    doList: [
+      "Pair a UI Policy (client) with a Data Policy (server) for mandatory fields",
+      "Use Data Policies to protect imports & integrations, not just forms",
+      "Use ACLs for anything security-related",
+      "Test Data Policies against REST / Import Set entry points too",
+    ],
+    avoidList: [
+      "Don't rely on a UI Policy alone to enforce 'required'",
+      "Don't use a Data Policy to try to control who can see a field",
+      "Don't assume ACLs make a field mandatory, they don't",
+      "Don't forget Data Policies apply even to background scripts",
+    ],
+    code: { file: "data_policy_config.txt", body:
+`// Data Policy: table = incident
+// Field: close_notes -> Mandatory = true
+// Applies to: form, import set, web service - no exceptions` },
+  },
+
+  {
+    day: "12", cat: "Platform & UX", slug: "update-sets",
+    title: "Update Sets",
+    tagline: "How customizations move safely between instances.",
+    sections: [
+      { n: "01", label: "Core Concepts", items: [
+        ["Update Set", "A container that tracks configuration changes"],
+        ["Local vs Remote", "Local = created here, Remote = pulled from elsewhere"],
+        ["Current set", "New changes are captured into the active set"],
+        ["Preview", "Checks for conflicts before committing to a target"],
+      ]},
+      { n: "02", label: "Lifecycle", items: [
+        ["In progress", "Actively receiving new changes"],
+        ["Complete", "Marked done and ready to move"],
+        ["Export / retrieve", "Send to, or pull from, another instance"],
+        ["Commit", "Apply the update set's changes on the target instance"],
+      ]},
+      { n: "03", label: "Best Practices", items: [
+        ["Create a dedicated set", "Never work directly in Default"],
+        ["Name it clearly", "Include a ticket number or short description"],
+        ["One feature per set", "Easier to review, easier to back out"],
+        ["Preview on target", "Catch conflicts before committing"],
+        ["Check for missing records", "Some record types don't track automatically"],
+        ["Skip unrelated noise", "Don't include unrelated system changes"],
+      ]},
+    ],
+    doList: [
+      "Always work in a purpose-built Update Set, never Default",
+      "Preview before committing on any target instance",
+      "Keep one Update Set scoped to one feature or fix",
+      "Document what's inside before handing it off for testing",
+    ],
+    avoidList: [
+      "Don't leave your Update Set as 'Default' during real dev work",
+      "Don't ignore preview warnings and force-commit anyway",
+      "Don't bundle unrelated changes into one giant Update Set",
+      "Don't forget some artifacts, like data records, aren't tracked at all",
+    ],
+    code: { file: "notes.txt", body:
+`// Common gotcha:
+// Reference / data table records are NOT captured
+// by Update Sets by default - use a Data Source
+// or recreate them manually on the target instance.` },
+  },
+
+  {
+    day: "13", cat: "Integration", slug: "scripted-rest-apis",
+    title: "Scripted REST APIs",
+    tagline: "Exposing custom endpoints for external systems to call.",
+    sections: [
+      { n: "01", label: "Building the API", items: [
+        ["Scripted REST API", "Container for a set of related resources"],
+        ["Resource", "One endpoint: a specific path + HTTP method"],
+        ["Namespace", "Prefix used in the endpoint's URL"],
+        ["Requires role?", "Optional setting controlling who can call it"],
+      ]},
+      { n: "02", label: "Handling the Request", items: [
+        ["request.body.data", "Parsed JSON/XML body sent by the caller"],
+        ["request.queryParams", "URL query string parameters"],
+        ["request.pathParams", "Values captured from the URL path"],
+        ["response.setStatus(code)", "Set the HTTP status code to return"],
+      ]},
+      { n: "03", label: "Response & Security", items: [
+        ["response.setBody(obj)", "Return JSON data to the caller"],
+        ["Default format", "JSON, unless the caller requests otherwise"],
+        ["Error handling", "Wrap logic in try/catch, set proper status codes"],
+        ["Requires authentication", "Basic Auth, OAuth, or API key by default"],
+        ["Requires role / ACL", "Add role checks inside the resource script"],
+        ["Rate limiting", "Consider inbound REST throttling for public APIs"],
+      ]},
+    ],
+    doList: [
+      "Validate every input from body / query / path parameters",
+      "Return proper HTTP status codes: 200, 400, 404, 500",
+      "Require a role for anything beyond public read access",
+      "Log failures with gs.error() for easier troubleshooting",
+    ],
+    avoidList: [
+      "Don't trust the request body without validation",
+      "Don't return raw stack traces or internal errors to callers",
+      "Don't skip authentication on endpoints touching sensitive data",
+      "Don't forget to document expected request / response formats",
+    ],
+    code: { file: "incident_resource.js", body:
+`(function process(request, response) {
+  var sysId = request.pathParams.incident_id;
+  var gr = new GlideRecord('incident');
+  if (gr.get(sysId)) {
+    response.setBody({ number: gr.getValue('number'), state: gr.getValue('state') });
+  } else {
+    response.setStatus(404);
+    response.setBody({ error: 'Incident not found' });
+  }
+})(request, response);` },
+  },
+
+  {
+    day: "14", cat: "Automation", slug: "notifications",
+    title: "Notifications",
+    tagline: "Sending the right message, to the right person, automatically.",
+    sections: [
+      { n: "01", label: "Notification Basics", items: [
+        ["Notification record", "Defines who, when, and what content to send"],
+        ["Table & condition", "Which record changes trigger this notification"],
+        ["Recipients", "Users, groups, fields, or roles"],
+        ["Content", "Subject / body using field values and email scripts"],
+      ]},
+      { n: "02", label: "Triggering a Notification", items: [
+        ["Record inserted / updated", "Standard event-based trigger"],
+        ["Event fired", "Custom trigger via gs.eventQueue()"],
+        ["Weekly digest", "Scheduled notification, not event-based"],
+        ["Send Test", "Preview and test before going live"],
+      ]},
+      { n: "03", label: "Email Scripts", items: [
+        ["Reusable content blocks", "Insert dynamic text into notifications"],
+        ["${mail_script:name}", "Placeholder syntax used inside the body"],
+        ["Full script access", "Use current, template, and email objects"],
+        ["Conditional content", "Show different text based on record state"],
+        ["Related record data", "Pull in data from linked / related tables"],
+        ["Formatting", "Build tables or lists dynamically in the email"],
+      ]},
+    ],
+    doList: [
+      "Trigger notifications off specific events, not just any update",
+      "Test notifications with 'Send Test' before activating",
+      "Use Email Scripts for any logic beyond simple field values",
+      "Keep recipient lists tight to avoid notification fatigue",
+    ],
+    avoidList: [
+      "Don't fire a notification on every field change on a busy table",
+      "Don't put heavy queries inside an Email Script",
+      "Don't hard-code recipient emails, use fields / groups / roles",
+      "Don't let a weekly digest duplicate real-time alerts",
+    ],
+    code: { file: "email_script.js", body:
+`// Email Script: extra content only for high priority
+template.print('Incident: ' + current.number + '\\n');
+if (current.priority == 1) {
+  template.print('*** P1 incident - respond immediately ***');
+}` },
+  },
+
+  {
+    day: "15", cat: "Automation", slug: "flow-designer",
+    title: "Flow Designer",
+    tagline: "Low-code automation that's replacing classic Workflows.",
+    sections: [
+      { n: "01", label: "Core Building Blocks", items: [
+        ["Flow", "A sequence of automated steps, built visually"],
+        ["Action", "A single reusable step, e.g. create record"],
+        ["Subflow", "A reusable flow called from other flows"],
+        ["Data pill", "Passes data from one step's output to another's input"],
+      ]},
+      { n: "02", label: "Trigger Types", items: [
+        ["Record trigger", "Created, updated, or deleted on a table"],
+        ["Schedule", "Runs on a recurring, time-based schedule"],
+        ["Application trigger", "Fired programmatically by other logic"],
+        ["Manual / on-demand", "Started explicitly from a button or script"],
+      ]},
+      { n: "03", label: "Flow Designer vs Workflow vs Script", compare: ["Flow Designer", "Workflow / Script"], items: [
+        ["Most automations", "New default, low-code, easier to maintain", "l"],
+        ["Cross-app orchestration", "Connects multiple tables / systems visually", "l"],
+        ["Business-user friendly", "Analysts / admins can build without deep code", "l"],
+        ["Complex conditional logic", "Beyond what actions can cleanly express", "r"],
+        ["Performance-critical loops", "Heavy record processing at scale", "r"],
+        ["Existing Workflows", "Classic Workflow still runs, not deprecated overnight", "r"],
+      ]},
+    ],
+    doList: [
+      "Prefer Flow Designer for new automation going forward",
+      "Break large flows into reusable subflows",
+      "Name data pills and steps clearly for future maintainers",
+      "Use the 'Test' feature before activating a flow",
+    ],
+    avoidList: [
+      "Don't rebuild every classic Workflow immediately, migrate deliberately",
+      "Don't nest excessive conditional branches, use subflows instead",
+      "Don't ignore flow execution logs when something doesn't fire",
+      "Don't put heavy per-record scripting logic inside a single action",
+    ],
+    code: { file: "script_step.js", body:
+`// Flow Designer Script step
+// Input: current record (incident)
+if (current.priority == 1) {
+  priority_label = 'Critical - respond now';
+} else {
+  priority_label = 'Standard';
+}` },
+  },
+
+  {
+    day: "16", cat: "Integration", slug: "import-sets",
+    title: "Import Sets",
+    tagline: "Getting external data into ServiceNow, safely and repeatably.",
+    sections: [
+      { n: "01", label: "Import Set Basics", items: [
+        ["Import Set Table", "Staging table that holds raw imported data"],
+        ["Data Source", "Defines where data comes from: file, JDBC, REST"],
+        ["Load transforms data", "Import Set Table → target table via a map"],
+        ["Coalesce", "Matches existing records instead of duplicating them"],
+      ]},
+      { n: "02", label: "Transform Maps", items: [
+        ["Field Map", "Maps one import column to one target field"],
+        ["Script Field Map", "Custom logic for complex value transforms"],
+        ["Run Business Rules", "Toggle to control whether target BRs fire"],
+        ["Order", "Multiple maps run in ascending Order value"],
+      ]},
+      { n: "03", label: "Transform Events", items: [
+        ["onBefore", "Runs before the record is transformed, can skip it"],
+        ["onAfter", "Runs after the target record is created / updated"],
+        ["ignore = true", "Set inside onBefore to skip this row entirely"],
+        ["Data cleanup", "Trim, reformat, or validate incoming values"],
+        ["Related record lookup", "Resolve a reference field from raw text"],
+        ["Logging", "Track skipped or failed rows for review"],
+      ]},
+    ],
+    doList: [
+      "Use Coalesce fields to prevent duplicate records on reimport",
+      "Test transforms on a small sample before a full load",
+      "Use onBefore to validate and skip bad rows early",
+      "Keep Script Field Maps small and focused",
+    ],
+    avoidList: [
+      "Don't write directly to target tables, skipping staging",
+      "Don't forget to check which Business Rules fire during bulk loads",
+      "Don't hard-code sys_ids in transform scripts",
+      "Don't ignore failed transform rows, review the import log",
+    ],
+    code: { file: "transform_map_onbefore.js", body:
+`(function runTransformScript(source, map, log, target) {
+  if (!source.u_email) {
+    ignore = true; // skip rows with no email
+  }
+})(source, map, log, target);` },
+  },
+
+  {
+    day: "17", cat: "Platform & UX", slug: "service-catalog",
+    title: "Service Catalog",
+    tagline: "Variables, Catalog Client Scripts & Catalog UI Policies.",
+    sections: [
+      { n: "01", label: "Catalog Variables", items: [
+        ["Variable Set", "Reusable group of variables across catalog items"],
+        ["Reference variable", "Points to a table, supports ref qualifiers"],
+        ["Variable attributes", "Extra config like ref qualifiers, macros"],
+        ["Catalog UI Policy", "Show / hide / mandatory logic for variables"],
+      ]},
+      { n: "02", label: "Catalog Client Scripts", items: [
+        ["onLoad / onChange / onSubmit", "Same script types as regular Client Scripts"],
+        ["Applies to", "Catalog item, Record Producer, or variable set"],
+        ["g_form (catalog)", "Same API, scoped to catalog variables"],
+        ["GlideAjax", "Server calls for dynamic variable behavior"],
+      ]},
+      { n: "03", label: "Reference Qualifiers", compare: ["Simple (no code)", "Dynamic (scripted)"], items: [
+        ["Encoded query string", "Filters reference field choices directly", "l"],
+        ["Set in variable definition", "No scripting required for simple cases", "l"],
+        ["javascript:function()", "Returns an encoded query dynamically", "r"],
+        ["Can use current variables", "Filter based on other catalog answers", "r"],
+      ]},
+    ],
+    doList: [
+      "Use Variable Sets to keep related catalog items consistent",
+      "Prefer Catalog UI Policies over Catalog Client Scripts when possible",
+      "Use advanced reference qualifiers for dynamic filtering",
+      "Test catalog scripts in both Service Portal and native UI",
+    ],
+    avoidList: [
+      "Don't duplicate the same variable across many items, use a Variable Set",
+      "Don't assume a form UI Policy also works on a catalog item",
+      "Don't forget Service Portal renders catalog scripts differently",
+      "Don't put sensitive logic in a client-facing reference qualifier",
+    ],
+    code: { file: "ref_qualifier.js", body:
+`function refQualifier() {
+  return 'active=true^department=' + current.variables.department;
+}` },
+  },
+
+  {
+    day: "18", cat: "Platform & UX", slug: "glidemodal-dialogs",
+    title: "GlideModal & Dialogs",
+    tagline: "Building popups and dialogs without leaving the platform.",
+    sections: [
+      { n: "01", label: "GlideModal", items: [
+        ["new GlideModal('id')", "Show a UI Page or message as a modal popup"],
+        ["setTitle(text)", "Set the modal's title bar text"],
+        ["setPreference(k, v)", "Pass data into the modal's UI Page"],
+        ["render()", "Actually display the modal on screen"],
+      ]},
+      { n: "02", label: "GlideDialogWindow", items: [
+        ["new GlideDialogWindow('id')", "Similar modal, with more layout control"],
+        ["setSize(w, h)", "Explicitly set width / height in pixels"],
+        ["setPreference(k, v)", "Same pattern for passing data"],
+        ["render()", "Display the dialog window"],
+      ]},
+      { n: "03", label: "Common Use Cases", items: [
+        ["Simple confirm", "GlideModal with a message and OK / Cancel"],
+        ["Custom form popup", "UI Page rendered inside a GlideDialogWindow"],
+        ["UI Page reads preference", "getPreference('key') inside the UI Page"],
+        ["Callback on close", "Refresh the parent form after the dialog closes"],
+      ]},
+    ],
+    doList: [
+      "Use setPreference() to pass data cleanly into a modal",
+      "Keep modal UI Pages simple and focused on one task",
+      "Set an explicit size for GlideDialogWindow when layout matters",
+      "Refresh the parent form / list after a dialog completes an action",
+    ],
+    avoidList: [
+      "Don't overuse modals for things a UI Policy could handle",
+      "Don't forget Service Portal renders dialogs differently",
+      "Don't pass sensitive data through client-visible preferences",
+      "Don't skip testing dialog behavior across browsers",
+    ],
+    code: { file: "open_dialog.js", body:
+`var dialog = new GlideModal('my_ui_page');
+dialog.setTitle('Add a comment');
+dialog.setPreference('sysparm_incident', current.sys_id);
+dialog.render();` },
+  },
+
+  {
+    day: "19", cat: "Automation", slug: "fix-background-scripts",
+    title: "Fix & Background Scripts",
+    tagline: "Three ways to run server-side code outside a normal trigger.",
+    sections: [
+      { n: "01", label: "Background Script", items: [
+        ["Runs once, ad hoc", "Executed manually from System Definition"],
+        ["Great for", "One-off data checks or quick fixes"],
+        ["No record stored", "Not saved as a reusable script"],
+        ["Use with caution", "Runs with full admin access, no undo"],
+      ]},
+      { n: "02", label: "Fix Script", items: [
+        ["Stored script record", "Reusable, can be re-run or shared"],
+        ["Runs via UI or Update Set", "Can be included in a deployment"],
+        ["Great for", "Data corrections that ship with a release"],
+        ["Best practice", "Always test in a sub-prod instance first"],
+      ]},
+      { n: "03", label: "Scheduled Jobs", items: [
+        ["Run once", "Executes a single time at a set date/time"],
+        ["Run on a schedule", "Daily, weekly, or a custom recurrence"],
+        ["Auto-cleanup", "'Run once' jobs can self-delete after running"],
+        ["Nightly cleanup", "Archive or purge old records"],
+        ["Scheduled reports", "Trigger a notification digest"],
+        ["Sync jobs", "Kick off scheduled imports or integrations"],
+      ]},
+    ],
+    doList: [
+      "Test any script in a sub-production instance first",
+      "Use gs.info() liberally so you can verify what ran",
+      "Wrap bulk updates in addQuery() / setLimit() safeguards",
+      "Turn a one-off Background Script into a Fix Script if you'll rerun it",
+    ],
+    avoidList: [
+      "Don't run untested bulk updates directly in production",
+      "Don't forget Background Scripts bypass most safety nets",
+      "Don't schedule heavy jobs during peak usage hours",
+      "Don't leave old 'Run once' scheduled jobs cluttering the table",
+    ],
+    code: { file: "fix_script.js", body:
+`var gr = new GlideRecord('incident');
+gr.addQuery('category', '');
+gr.addQuery('sys_created_on', '<', gs.daysAgoStart(365));
+gr.query();
+while (gr.next()) {
+  gr.category = 'inquiry';
+  gr.update();
+}` },
+  },
+
+  {
+    day: "20", cat: "Automation", slug: "atf-testing",
+    title: "ATF Testing",
+    tagline: "Testing ServiceNow changes without breaking production.",
+    sections: [
+      { n: "01", label: "Core Concepts", items: [
+        ["Test", "A sequence of steps that validate one scenario"],
+        ["Test Suite", "A collection of related tests run together"],
+        ["Step Config", "Reusable configuration for a specific step type"],
+        ["Client / Server steps", "Some steps run in-browser, others server-side"],
+      ]},
+      { n: "02", label: "Common Test Steps", items: [
+        ["Open a record", "Navigate to a form for a given table"],
+        ["Set field value", "Fill in a form field during the test"],
+        ["Impersonate user", "Run the test as a specific user or role"],
+        ["Assert condition", "Verify a field value or form state matches"],
+      ]},
+      { n: "03", label: "Running & Scheduling", items: [
+        ["Run manually", "Execute a single test on demand"],
+        ["Run a Suite", "Execute many related tests together"],
+        ["Results log", "Pass/fail detail per step, with screenshots"],
+        ["Scheduled execution", "Run suites automatically on a cadence"],
+        ["Run before deployment", "Validate an Update Set before committing"],
+        ["API trigger", "Kick off ATF runs from a pipeline or integration"],
+      ]},
+    ],
+    doList: [
+      "Build a test for every critical business process, not just happy paths",
+      "Group related tests into Suites for regression coverage",
+      "Run relevant Suites before promoting any Update Set",
+      "Use Impersonate steps to test role-based behavior",
+    ],
+    avoidList: [
+      "Don't rely only on manual testing for repeat regression checks",
+      "Don't build overly broad tests that are hard to debug when they fail",
+      "Don't ignore flaky tests, fix the timing issue causing them",
+      "Don't skip ATF just because 'it's a small change'",
+    ],
+    code: { file: "atf_script_step.js", body:
+`(function() {
+  var gr = new GlideRecord('incident');
+  gr.get(context.record_id);
+  return gr.getValue('state') == '7';
+})();` },
+  },
+
+  {
+    day: "21", cat: "CMDB & Discovery", slug: "cmdb-discovery",
+    title: "CMDB & Discovery",
+    tagline: "Understanding what's in your environment, and how it's found.",
+    sections: [
+      { n: "01", label: "CMDB Core Concepts", items: [
+        ["CI", "Configuration Item: any tracked asset or component"],
+        ["CI Class", "Table defining a CI type, e.g. cmdb_ci_server"],
+        ["CI Relationship", "Links between CIs, e.g. 'runs on', 'depends on'"],
+        ["CMDB Health", "Metrics on completeness / accuracy of CI data"],
+      ]},
+      { n: "02", label: "Discovery Basics", items: [
+        ["MID Server", "Agent that runs Discovery inside your network"],
+        ["Discovery Schedule", "Defines IP ranges / credentials to scan"],
+        ["Horizontal Discovery", "Classic pattern-based discovery approach"],
+        ["Service Mapping", "Discovers full application service dependencies"],
+      ]},
+      { n: "03", label: "Keeping CMDB Healthy", items: [
+        ["Duplicate CIs", "Same asset represented multiple times"],
+        ["Stale data", "CIs no longer reflecting current reality"],
+        ["Missing relationships", "CIs exist but aren't connected properly"],
+        ["Identification rules", "Define what makes a CI unique"],
+        ["Reconciliation rules", "Control which data source wins on conflict"],
+        ["Regular schedules", "Keep Discovery data fresh automatically"],
+      ]},
+    ],
+    doList: [
+      "Define clear identification rules before large-scale imports",
+      "Run Discovery on a regular, predictable schedule",
+      "Monitor CMDB Health dashboards for data quality issues",
+      "Use Service Mapping for business-critical applications",
+    ],
+    avoidList: [
+      "Don't import CI data without identification rules in place",
+      "Don't let multiple data sources silently overwrite each other",
+      "Don't treat CMDB as 'set once,' it needs ongoing maintenance",
+      "Don't run untested Discovery schedules against production networks",
+    ],
+    code: { file: "relationships.txt", body:
+`// Key relationship concept:
+// "App Server" --runs on--> "Server"
+// "Server" --depends on--> "Network Switch"
+// These power impact analysis across the CMDB` },
+  },
+
+  {
+    day: "22", cat: "Platform & UX", slug: "domain-separation",
+    title: "Domain Separation",
+    tagline: "Isolating data and config across business units on one instance.",
+    sections: [
+      { n: "01", label: "Core Concepts", items: [
+        ["Domain", "A logical partition of data within one instance"],
+        ["sys_domain field", "Tags each record with its owning domain"],
+        ["Domain hierarchy", "Domains can have parent / child relationships"],
+        ["Session domain", "The domain a logged-in user is working in"],
+      ]},
+      { n: "02", label: "How It Applies", items: [
+        ["Data separation", "Records in one domain hidden from another"],
+        ["Configuration", "Can be domain-specific or shared globally"],
+        ["Domain-extended tables", "Some tables support it, some don't"],
+        ["MSPs & holding companies", "Classic use case: one instance, many clients"],
+      ]},
+      { n: "03", label: "Things to Watch", items: [
+        ["Not all tables extend domain", "Some data is always global"],
+        ["Scripts running as admin", "Can bypass domain restrictions unexpectedly"],
+        ["Reports & dashboards", "May need domain-aware filtering"],
+        ["Plan the hierarchy early", "Hard to restructure once live"],
+        ["Test with real domain users", "Not just admin, to catch visibility gaps"],
+        ["Document global vs separated", "Avoid surprises for other developers"],
+      ]},
+    ],
+    doList: [
+      "Design your domain hierarchy before go-live, not after",
+      "Test visibility with actual domain-scoped users",
+      "Document which tables / configs are shared vs separated",
+      "Review scripts running with elevated privileges for domain leaks",
+    ],
+    avoidList: [
+      "Don't assume every table respects domain separation automatically",
+      "Don't retrofit domain separation onto a live instance casually",
+      "Don't forget global data is visible across all domains",
+      "Don't skip testing reports/dashboards for cross-domain leakage",
+    ],
+    code: { file: "domain_check.js", body:
+`if (current.sys_domain != gs.getUser().getDomainID()) {
+  gs.addErrorMessage('This record belongs to a different domain');
+}` },
+  },
+];
+
+const CAT_ORDER = ["Querying Data", "Server & Client", "Business Logic", "Security", "Integration", "Automation", "CMDB & Discovery", "Platform & UX"];
+
+function esc(s) {
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+function highlight(code) {
+  let s = esc(code);
+  s = s.replace(/\b(var|function|new|return|if|else|while|typeof)\b/g, '<span class="tok-k">$1</span>');
+  s = s.replace(/('[^']*')/g, '<span class="tok-s">$1</span>');
+  s = s.replace(/(\/\/[^\n]*)/g, '<span class="tok-c">$1</span>');
+  return s;
+}
+
+function renderSection(sec) {
+  let inner;
+  if (sec.compare) {
+    const left = sec.items.filter(i => i[2] === "l");
+    const right = sec.items.filter(i => i[2] === "r");
+    const colHtml = (label, rows) =>
+      `<div class="col"><div class="col-head">${esc(label)}</div>` +
+      rows.map(([t, d]) => `<div class="def"><dt>${esc(t)}</dt><dd>${esc(d)}</dd></div>`).join("") +
+      `</div>`;
+    inner = `<div class="defs two-col">${colHtml(sec.compare[0], left)}${colHtml(sec.compare[1], right)}</div>`;
+  } else {
+    inner = `<div class="defs">` +
+      sec.items.map(([t, d]) => `<div class="def"><dt>${esc(t)}</dt><dd>${esc(d)}</dd></div>`).join("") +
+      `</div>`;
+  }
+  return `<div class="ref-section">
+    <div class="ref-label"><span class="n">${sec.n}</span>${esc(sec.label)}</div>
+    ${inner}
+  </div>`;
+}
+
+function searchText(t) {
+  const secText = t.sections.map(s =>
+    s.label + " " + (s.compare ? s.compare.join(" ") : "") + " " +
+    s.items.map(i => i[0] + " " + i[1]).join(" ")
+  ).join(" ");
+  return (t.title + " " + t.tagline + " " + t.cat + " " + secText).toLowerCase();
+}
+
+function renderTopic(t) {
+  return `<article class="topic" id="${t.slug}" data-search="${esc(searchText(t))}">
+    <div class="topic-head">
+      <div class="topic-eyebrow">${esc(t.cat)}</div>
+      <h3>${esc(t.title)}</h3>
+      <p class="tagline">${esc(t.tagline)}</p>
+    </div>
+    ${t.sections.map(renderSection).join("")}
+    <div class="guidance">
+      <div class="panel do">
+        <h4><span class="mark">&#10003;</span>Do</h4>
+        <ul>${t.doList.map(x => `<li>${esc(x)}</li>`).join("")}</ul>
+      </div>
+      <div class="panel avoid">
+        <h4><span class="mark">&#10005;</span>Avoid</h4>
+        <ul>${t.avoidList.map(x => `<li>${esc(x)}</li>`).join("")}</ul>
+      </div>
+    </div>
+    <figure class="ref-code">
+      <figcaption><span class="dots"><i></i><i></i><i></i></span>${esc(t.code.file)}</figcaption>
+      <pre><code>${highlight(t.code.body)}</code></pre>
+    </figure>
+  </article>`;
+}
+
+const content = document.getElementById("content");
+content.innerHTML = CAT_ORDER.map(cat => {
+  const items = TOPICS.filter(t => t.cat === cat);
+  if (!items.length) return "";
+  return `<section class="cat-block" data-cat="${esc(cat)}">
+    <h2 class="cat-heading">${esc(cat)}</h2>
+    ${items.map(renderTopic).join("")}
+  </section>`;
+}).join("");
+
+const toc = document.getElementById("toc");
+toc.innerHTML = CAT_ORDER.map(cat => {
+  const items = TOPICS.filter(t => t.cat === cat);
+  if (!items.length) return "";
+  return `<div class="toc-group" data-cat="${esc(cat)}">
+    <h2>${esc(cat)}</h2>
+    ${items.map(t => `<a href="#${t.slug}" data-slug="${t.slug}"><span>${esc(t.title)}</span></a>`).join("")}
+  </div>`;
+}).join("");
+
+// ---- Filter ----
+const filter = document.getElementById("filter");
+const tocEmpty = document.getElementById("tocEmpty");
+filter.addEventListener("input", () => {
+  const q = filter.value.trim().toLowerCase();
+  let anyTopic = false;
+  TOPICS.forEach(t => {
+    const hay = searchText(t);
+    const match = !q || hay.includes(q);
+    document.getElementById(t.slug).classList.toggle("is-hidden", !match);
+    const link = toc.querySelector(`a[data-slug="${t.slug}"]`);
+    if (link) link.classList.toggle("is-hidden", !match);
+    if (match) anyTopic = true;
+  });
+  toc.querySelectorAll(".toc-group").forEach(g => {
+    const visible = [...g.querySelectorAll("a")].some(a => !a.classList.contains("is-hidden"));
+    g.classList.toggle("is-hidden", !visible);
+  });
+  content.querySelectorAll(".cat-block").forEach(b => {
+    const visible = [...b.querySelectorAll(".topic")].some(a => !a.classList.contains("is-hidden"));
+    b.classList.toggle("is-hidden", !visible);
+  });
+  tocEmpty.style.display = anyTopic ? "none" : "block";
+});
+
+// ---- Resume "last updated" date ----
+(function(){
+  var el = document.getElementById('resume-updated');
+  if(!el) return;
+  fetch('resume/Brannon_Breau_Resume.pdf', {method:'HEAD', cache:'no-store'})
+    .then(function(res){
+      var lm = res.headers.get('Last-Modified');
+      if(!lm) return;
+      var text = new Date(lm).toLocaleDateString('en-US', {year:'numeric', month:'long', day:'numeric'});
+      el.textContent = 'Last updated: ' + text;
+    })
+    .catch(function(){});
+})();
+</script>
+</body>
+</html>
