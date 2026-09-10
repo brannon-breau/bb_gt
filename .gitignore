@@ -8,3 +8,10 @@ desktop.ini
 
 # Logs
 *.log
+
+# PDFs
+*.pdf
+
+# Project pages (keep only the template)
+projects/*.html
+!projects/project-template.html
