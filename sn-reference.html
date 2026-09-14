@@ -440,11 +440,11 @@
     </a>
 
     <div class="proj-title">ServiceNow Developer Reference</div>
-    <p class="proj-tagline">Twenty-two platform concepts — the core scripting APIs, the configuration
+    <p class="proj-tagline">Twenty-six platform concepts — the core scripting APIs, the configuration
     layers, and the do / avoid rules that keep them out of trouble. Built for quick lookup while building.</p>
     <div class="ref-meta">
       <span><strong>Source:</strong> &ldquo;ServiceNow Dev Series&rdquo; cheat sheets by Arpan Shah</span>
-      <span><strong>Topics:</strong> 22, grouped by area</span>
+      <span><strong>Topics:</strong> 26, grouped by area</span>
     </div>
 
     <div class="ref-layout">
@@ -1510,6 +1510,192 @@ while (gr.next()) {
 `if (current.sys_domain != gs.getUser().getDomainID()) {
   gs.addErrorMessage('This record belongs to a different domain');
 }` },
+  },
+
+  {
+    day: "23", cat: "Server & Client", slug: "glidedatetime",
+    title: "GlideDateTime",
+    tagline: "Date math, timezones & formatting without the headaches.",
+    sections: [
+      { n: "01", label: "Core Objects", items: [
+        ["new GlideDateTime()", "Current date/time in the instance timezone"],
+        ["new GlideDateTime(str)", "Parse a date/time string into an object"],
+        ["GlideDate", "Date-only value, no time component"],
+        ["GlideDuration", "Represents a span of time between two dates"],
+      ]},
+      { n: "02", label: "Reading & Formatting", items: [
+        ["gdt.getDisplayValue()", "Value formatted for the user's timezone"],
+        ["gdt.getValue()", "Raw value in the system's internal format"],
+        ["gdt.format('yyyy-MM-dd')", "Custom format pattern for output"],
+        ["gdt.getDayOfWeekLocalTime()", "Day of week in the user's timezone"],
+      ]},
+      { n: "03", label: "Date Math", items: [
+        ["gdt.addDaysUTC(n)", "Add or subtract days (negative n)"],
+        ["gdt.subtract(otherGdt)", "Returns a GlideDuration between two dates"],
+        ["gdt.addSeconds(n)", "Add or subtract seconds"],
+        ["gdt.compareTo(otherGdt)", "Negative/zero/positive comparison result"],
+        ["gs.daysAgo(n)", "Date string n days before today"],
+        ["gs.daysAgoStart/End(n)", "Start/end of day, n days back, for queries"],
+      ]},
+    ],
+    doList: [
+      "Store and query dates in UTC, display in user timezone",
+      "Use GlideDuration for elapsed-time calculations, not raw subtraction",
+      "Use gs.daysAgoStart()/End() for reliable date-range queries",
+      "Use getDisplayValue() for anything shown to a user",
+    ],
+    avoidList: [
+      "Don't compare getDisplayValue() strings directly, compare objects",
+      "Don't assume the instance timezone matches every user's timezone",
+      "Don't build date strings by hand, use format() instead",
+      "Don't forget DST can shift day-boundary calculations",
+    ],
+    code: { file: "date_math.js", body:
+`var start = new GlideDateTime(current.opened_at);
+var end = new GlideDateTime(current.resolved_at);
+var duration = GlideDateTime.subtract(start, end);
+gs.info('Resolution time: ' + duration.getDisplayValue());` },
+  },
+
+  {
+    day: "24", cat: "Integration", slug: "outbound-integrations",
+    title: "Outbound Integrations",
+    tagline: "Calling external systems from ServiceNow.",
+    sections: [
+      { n: "01", label: "REST Message", items: [
+        ["REST Message record", "Reusable definition: endpoint + methods"],
+        ["HTTP Method", "GET, POST, PUT, PATCH, DELETE variants per message"],
+        ["new sn_ws.RESTMessageV2(...)", "Instantiate a message in script"],
+        ["setStringParameterNoEscape", "Insert dynamic values into the endpoint"],
+      ]},
+      { n: "02", label: "SOAP Message", items: [
+        ["SOAP Message record", "Reusable definition using a WSDL"],
+        ["new SOAPMessageV2(...)", "Instantiate in script, similar to REST"],
+        ["setRequestBody(xml)", "Provide the SOAP envelope/body manually"],
+        ["Less common now", "REST/JSON has mostly replaced SOAP for new work"],
+      ]},
+      { n: "03", label: "Executing & Handling the Response", items: [
+        ["request.execute()", "Sends the request, returns a response object"],
+        ["executeAsync()", "Non-blocking call, doesn't wait for a response"],
+        ["response.getStatusCode()", "HTTP status code returned by the server"],
+        ["MID Server", "Route the request through a MID Server if needed"],
+        ["response.getBody()", "Raw response body, usually JSON or XML"],
+        ["Error handling", "Wrap execute() in try/catch, check status codes"],
+      ]},
+    ],
+    doList: [
+      "Store credentials in a Connection & Credential Alias, not in script",
+      "Check the status code before trusting the response body",
+      "Use executeAsync() for calls that don't need an immediate result",
+      "Log request/response details for troubleshooting failures",
+    ],
+    avoidList: [
+      "Don't hard-code endpoint URLs or API keys inside scripts",
+      "Don't assume every external call succeeds, always handle failure",
+      "Don't block long-running UI actions on a synchronous execute()",
+      "Don't skip a MID Server when calling systems behind a firewall",
+    ],
+    code: { file: "rest_message_call.js", body:
+`var request = new sn_ws.RESTMessageV2('WeatherAPI', 'GetForecast');
+request.setStringParameterNoEscape('city', 'Austin');
+var response = request.execute();
+if (response.getStatusCode() == 200) {
+  gs.info(response.getBody());
+}` },
+  },
+
+  {
+    day: "25", cat: "Automation", slug: "slas-explained",
+    title: "SLAs Explained",
+    tagline: "How service commitments attach to records and get tracked.",
+    sections: [
+      { n: "01", label: "SLA Definition Basics", items: [
+        ["SLA Definition", "Defines the timer, duration, and conditions"],
+        ["Start condition", "When the SLA timer begins running"],
+        ["Pause condition", "Temporarily stops the clock, e.g. Awaiting Info"],
+        ["Stop condition", "Ends the SLA timer, e.g. Resolved/Closed"],
+      ]},
+      { n: "02", label: "Lifecycle States", items: [
+        ["In progress", "Timer actively running toward breach"],
+        ["Paused", "Timer stopped, waiting on a pause condition"],
+        ["Completed", "Stop condition met before breach"],
+        ["Breached", "Duration exceeded before the stop condition"],
+      ]},
+      { n: "03", label: "Working with task_sla", items: [
+        ["task_sla table", "One record per SLA instance attached to a task"],
+        ["business_percentage", "How far through the SLA duration, as a %"],
+        ["has_breached", "True once the SLA has passed its deadline"],
+        ["Business schedule", "SLA duration respects working hours/holidays"],
+        ["Retroactive SLAs", "Can be attached after the fact if configured"],
+        ["Notifications", "Warn before breach using percentage thresholds"],
+      ]},
+    ],
+    doList: [
+      "Use business schedules so SLAs respect working hours",
+      "Set warning notifications before the actual breach point",
+      "Keep start/pause/stop conditions as simple as possible",
+      "Review task_sla records when investigating a disputed breach",
+    ],
+    avoidList: [
+      "Don't stack overlapping SLA definitions without checking priority",
+      "Don't ignore pause conditions, they change the real breach time",
+      "Don't hard-code SLA durations in scripts, use the definition",
+      "Don't forget retroactive changes can recalculate historical SLAs",
+    ],
+    code: { file: "sla_check.js", body:
+`var slaGr = new GlideRecord('task_sla');
+slaGr.addQuery('task', current.sys_id);
+slaGr.addQuery('sla.name', 'Resolution SLA');
+slaGr.query();
+if (slaGr.next()) {
+  gs.info('SLA at: ' + slaGr.getValue('business_percentage') + '%');
+}` },
+  },
+
+  {
+    day: "26", cat: "Querying Data", slug: "encoded-queries",
+    title: "Encoded Queries",
+    tagline: "Reading, building, and combining ServiceNow's query syntax.",
+    sections: [
+      { n: "01", label: "Reading the Syntax", items: [
+        ["field=value", "Simple equality condition"],
+        ["field!=value", "Not-equal condition"],
+        ["fieldISNOTEMPTY", "Field has any non-blank value"],
+        ["^", "Separates AND conditions"],
+        ["^OR", "Separates an OR condition from the previous one"],
+      ]},
+      { n: "02", label: "Building One", items: [
+        ["gr.addEncodedQuery(str)", "Apply a raw encoded query string"],
+        ["gr.getEncodedQuery()", "Read back the full query as a string"],
+        ["Breadcrumb copy", "List filters expose their encoded query in the UI"],
+        ["ORDERBYfield", "Encoded sort, ascending by that field"],
+      ]},
+      { n: "03", label: "Combining AND / OR Logic", items: [
+        ["active=true^priority=1", "AND: active AND priority is 1"],
+        ["active=true^ORpriority=1", "OR: active OR priority is 1, same group"],
+        ["Parentheses not used", "Grouping is done via query rules, not ()"],
+        ["addQuery() vs addOrCondition()", "Build the same logic without raw strings"],
+        ["Nested OR groups", "Achieved by chaining addOrCondition() carefully"],
+        ["Validate with a list filter", "Build it visually, then copy the encoded query"],
+      ]},
+    ],
+    doList: [
+      "Build complex filters visually first, then copy the encoded query",
+      "Use getEncodedQuery() to debug what a GlideRecord actually queried",
+      "Prefer addQuery()/addOrCondition() over hand-typed strings when possible",
+      "Test encoded queries against a small data set before wide use",
+    ],
+    avoidList: [
+      "Don't hand-write complex encoded queries from memory, verify them",
+      "Don't assume ^OR groups with later ^AND conditions the way you expect",
+      "Don't forget field names must match the actual column name, not the label",
+      "Don't skip testing when reusing a copied encoded query in script",
+    ],
+    code: { file: "encoded_query.js", body:
+`var gr = new GlideRecord('incident');
+gr.addEncodedQuery('active=true^priority=1^ORpriority=2');
+gr.query();
+gs.info('Query used: ' + gr.getEncodedQuery());` },
   },
 ];
 
